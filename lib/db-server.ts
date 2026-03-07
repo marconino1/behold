@@ -1,0 +1,72 @@
+import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { withTimeout } from "@/lib/with-timeout";
+
+const DB_QUERY_TIMEOUT_MS = 5000;
+
+export async function getUserProgressServer(
+  userId: string
+): Promise<string[]> {
+  const supabase = await createServerSupabaseClient();
+  const { data, error } = await withTimeout(
+    supabase.from("lesson_progress").select("lesson_id").eq("user_id", userId),
+    DB_QUERY_TIMEOUT_MS,
+    "getUserProgress timed out"
+  ).catch(() => ({ data: null, error: { message: "timeout" } }));
+
+  if (error) return [];
+  return (data ?? []).map((row) => row.lesson_id);
+}
+
+export async function getProfileServer(
+  userId: string
+): Promise<{ first_name: string; created_at: string | null } | null> {
+  const supabase = await createServerSupabaseClient();
+  const { data, error } = await withTimeout(
+    supabase
+      .from("profiles")
+      .select("first_name, created_at")
+      .eq("id", userId)
+      .maybeSingle(),
+    DB_QUERY_TIMEOUT_MS,
+    "getProfile timed out"
+  ).catch(() => ({ data: null, error: { message: "timeout" } }));
+
+  if (error || !data) return null;
+  return {
+    first_name: data.first_name ?? "",
+    created_at: data.created_at ?? null,
+  };
+}
+
+export async function getStreakServer(
+  userId: string
+): Promise<{ current: number; longest: number }> {
+  const supabase = await createServerSupabaseClient();
+  const { data, error } = await withTimeout(
+    supabase
+      .from("streaks")
+      .select("current_streak, longest_streak")
+      .eq("user_id", userId)
+      .maybeSingle(),
+    DB_QUERY_TIMEOUT_MS,
+    "getStreak timed out"
+  ).catch(() => ({ data: null, error: { message: "timeout" } }));
+
+  if (error) return { current: 0, longest: 0 };
+  return {
+    current: data?.current_streak ?? 0,
+    longest: data?.longest_streak ?? 0,
+  };
+}
+
+export async function getTotalXPServer(userId: string): Promise<number> {
+  const supabase = await createServerSupabaseClient();
+  const { data, error } = await withTimeout(
+    supabase.from("lesson_progress").select("xp_earned").eq("user_id", userId),
+    DB_QUERY_TIMEOUT_MS,
+    "getTotalXP timed out"
+  ).catch(() => ({ data: null, error: { message: "timeout" } }));
+
+  if (error) return 0;
+  return (data ?? []).reduce((sum, row) => sum + (row.xp_earned ?? 0), 0);
+}
