@@ -72,6 +72,13 @@ function formatJourneySince(createdAt: string | null): string {
 
 const DB_TIMEOUT_MS = 8000;
 
+type ProfileData = [
+  { first_name: string; created_at: string | null } | null,
+  string[],
+  { current: number; longest: number },
+  number,
+];
+
 export default async function ProfilePage() {
   const supabase = await createServerSupabaseClient();
   const { data } = await withTimeout(
@@ -85,21 +92,24 @@ export default async function ProfilePage() {
     redirect("/login");
   }
 
-  const [profile, completedLessonIds, streak, xp] = await withTimeout(
-    Promise.all([
-      getProfileServer(userId),
-      getUserProgressServer(userId),
-      getStreakServer(userId),
-      getTotalXPServer(userId),
-    ]),
-    DB_TIMEOUT_MS,
-    "Loading your profile timed out"
-  ).catch(() => [
-    { first_name: "", created_at: null },
-    [] as string[],
-    { current: 0, longest: 0 },
-    0,
-  ]);
+  const [profile, completedLessonIds, streak, xp]: ProfileData =
+    await withTimeout(
+      Promise.all([
+        getProfileServer(userId),
+        getUserProgressServer(userId),
+        getStreakServer(userId),
+        getTotalXPServer(userId),
+      ]),
+      DB_TIMEOUT_MS,
+      "Loading your profile timed out"
+    ).catch(
+      (): ProfileData => [
+        { first_name: "", created_at: null },
+        [],
+        { current: 0, longest: 0 },
+        0,
+      ]
+    );
 
   const tierProgress = buildTierProgress(completedLessonIds);
   const lessonsDone = completedLessonIds.length;
