@@ -11,14 +11,21 @@ export class TimeoutError extends Error {
 }
 
 export function withTimeout<T>(
-  promise: Promise<T>,
+  promise: PromiseLike<T>,
   ms: number,
   message = "Operation timed out"
 ): Promise<T> {
-  return Promise.race([
-    promise,
-    new Promise<T>((_, reject) =>
-      setTimeout(() => reject(new TimeoutError(message)), ms)
-    ),
-  ]);
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new TimeoutError(message)), ms);
+    Promise.resolve(promise).then(
+      (val) => {
+        clearTimeout(timer);
+        resolve(val);
+      },
+      (err) => {
+        clearTimeout(timer);
+        reject(err);
+      }
+    );
+  });
 }
