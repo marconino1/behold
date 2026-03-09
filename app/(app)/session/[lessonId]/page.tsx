@@ -8,7 +8,8 @@ import Leo from "@/components/mascot/Leo";
 import Button from "@/components/ui/Button";
 import { LESSONS } from "@/content/behold_lesson_content.js";
 import { createClient } from "@/lib/supabase/client";
-import { completeLesson, logPrayer } from "@/lib/db";
+import { completeLesson, getHeartsStatus, loseHeart, logPrayer } from "@/lib/db";
+import { calculateCurrentHearts } from "@/lib/hearts";
 import { checkAndUpdateStreak } from "@/lib/streak";
 
 const GRADIENT =
@@ -58,7 +59,9 @@ export default function SessionPage() {
   const [userId, setUserId] = useState<string | null>(null);
   const [screen, setScreen] = useState<Screen>("intro");
   const [currentCard, setCurrentCard] = useState(0);
-  const [hearts, setHearts] = useState(3);
+  const [hearts, setHearts] = useState(5);
+  const [nextRefillAt, setNextRefillAt] = useState<Date | null>(null);
+  const [countdown, setCountdown] = useState("0:00:00");
   const [xpEarned, setXpEarned] = useState(0);
   const [wrongAnswers, setWrongAnswers] = useState<Set<number>>(new Set());
   const [cardAnswered, setCardAnswered] = useState(false);
@@ -77,6 +80,37 @@ export default function SessionPage() {
         if (user) setUserId(user.id);
       });
   }, []);
+
+  useEffect(() => {
+    if (!userId) return;
+    getHeartsStatus(userId)
+      .then(({ hearts: h, lastLostAt }) => {
+        const { currentHearts, nextRefillAt: next } = calculateCurrentHearts(h, lastLostAt);
+        setHearts(currentHearts);
+        setNextRefillAt(next);
+      })
+      .catch(() => {});
+  }, [userId]);
+
+  useEffect(() => {
+    if (!nextRefillAt) return;
+    const tick = () => {
+      const diff = nextRefillAt.getTime() - Date.now();
+      if (diff <= 0) {
+        setCountdown("0:00:00");
+        setNextRefillAt(null);
+        setHearts(1);
+        return;
+      }
+      const h = Math.floor(diff / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      setCountdown(`${h}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`);
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [nextRefillAt]);
 
   useEffect(() => {
     if (screen === "complete" && userId && !completeMounted) {
@@ -140,6 +174,18 @@ export default function SessionPage() {
       setXpEarned((x) => x + 20);
     } else {
       setHearts((h) => Math.max(0, h - 1));
+      if (userId) {
+        loseHeart(userId)
+          .then(({ hearts: newHearts, lastLostAt }) => {
+            setHearts(newHearts);
+            if (newHearts === 0 && lastLostAt) {
+              setNextRefillAt(
+                new Date(new Date(lastLostAt).getTime() + 5 * 60 * 60 * 1000)
+              );
+            }
+          })
+          .catch(() => {});
+      }
       setWrongAnswers((s) => new Set(s).add(currentCard));
     }
   }, [
@@ -148,6 +194,7 @@ export default function SessionPage() {
     fillBlankValues,
     selectedAnswer,
     sequenceValues,
+    userId,
   ]);
 
   const handleContinue = useCallback(() => {
@@ -178,10 +225,22 @@ export default function SessionPage() {
         setXpEarned((x) => x + 20);
       } else {
         setHearts((h) => Math.max(0, h - 1));
+        if (userId) {
+          loseHeart(userId)
+            .then(({ hearts: newHearts, lastLostAt }) => {
+              setHearts(newHearts);
+              if (newHearts === 0 && lastLostAt) {
+                setNextRefillAt(
+                  new Date(new Date(lastLostAt).getTime() + 5 * 60 * 60 * 1000)
+                );
+              }
+            })
+            .catch(() => {});
+        }
         setWrongAnswers((s) => new Set(s).add(currentCard));
       }
     },
-    [lesson, currentCard]
+    [lesson, currentCard, userId]
   );
 
   const handleFillBlankSelect = useCallback((word: string, numBlanks: number) => {
@@ -456,6 +515,73 @@ export default function SessionPage() {
     );
   }
 
+  if (screen === "learn" && hearts === 0) {
+    return (
+      <div
+        style={{
+          minHeight: "100vh",
+          background: GRADIENT,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: 40,
+        }}
+      >
+        <div style={{ marginBottom: 24 }}>
+          <Leo state="oops" size="session" />
+        </div>
+        <h1
+          style={{
+            fontFamily: "'Playfair Display', Georgia, serif",
+            fontSize: 28,
+            fontWeight: 700,
+            color: "white",
+            marginBottom: 12,
+            textAlign: "center",
+          }}
+        >
+          No hearts left.
+        </h1>
+        <p
+          style={{
+            fontFamily: "'Nunito', system-ui, sans-serif",
+            fontSize: 16,
+            color: "rgba(255,255,255,0.7)",
+            marginBottom: 8,
+            textAlign: "center",
+          }}
+        >
+          Your next heart refills in:
+        </p>
+        <p
+          style={{
+            fontFamily: "'Playfair Display', Georgia, serif",
+            fontSize: 48,
+            fontWeight: 700,
+            color: "var(--color-gold)",
+            marginBottom: 32,
+          }}
+        >
+          {countdown}
+        </p>
+        <Link href="/dashboard">
+          <Button
+            variant="primary"
+            style={{
+              background: "var(--color-gold)",
+              color: "white",
+              borderRadius: 9999,
+              padding: "12px 24px",
+            }}
+          >
+            Back to dashboard
+          </Button>
+        </Link>
+      </div>
+    );
+  }
+
   if (screen === "learn") {
     const card = lesson.cards[currentCard];
     if (!card) return null;
@@ -535,7 +661,7 @@ export default function SessionPage() {
             </div>
           </div>
           <div style={{ display: "flex", gap: 4 }}>
-            {[1, 2, 3].map((i) => (
+            {[1, 2, 3, 4, 5].map((i) => (
               <Icon
                 key={i}
                 name="heart"

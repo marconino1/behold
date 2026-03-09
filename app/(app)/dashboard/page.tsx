@@ -1,5 +1,6 @@
 import {
   getUserProgressServer,
+  getHeartsStatusServer,
   getProfileServer,
   getStreakServer,
   getTotalXPServer,
@@ -8,6 +9,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { withTimeout } from "@/lib/with-timeout";
 import { DAY_PLAN } from "@/content/behold_lesson_content.js";
+import { calculateCurrentHearts } from "@/lib/hearts";
 import PathScreen from "@/components/dashboard/PathScreen";
 
 export const metadata = {
@@ -21,6 +23,7 @@ type DashboardData = [
   string[],
   { current: number; longest: number },
   number,
+  { hearts: number; lastLostAt: string | null },
 ];
 
 export default async function DashboardPage() {
@@ -36,13 +39,14 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
-  const [profile, completedLessonIds, streak, xp]: DashboardData =
+  const [profile, completedLessonIds, streak, xp, heartsStatus]: DashboardData =
     await withTimeout(
       Promise.all([
         getProfileServer(userId),
         getUserProgressServer(userId),
         getStreakServer(userId),
         getTotalXPServer(userId),
+        getHeartsStatusServer(userId),
       ]),
       DB_TIMEOUT_MS,
       "Loading your progress timed out"
@@ -52,8 +56,14 @@ export default async function DashboardPage() {
         [],
         { current: 0, longest: 0 },
         0,
+        { hearts: 5, lastLostAt: null },
       ]
     );
+
+  const { currentHearts, nextRefillAt } = calculateCurrentHearts(
+    heartsStatus.hearts,
+    heartsStatus.lastLostAt
+  );
 
   return (
     <PathScreen
@@ -62,6 +72,8 @@ export default async function DashboardPage() {
       xp={xp}
       completedLessonIds={completedLessonIds}
       dayPlan={DAY_PLAN}
+      currentHearts={currentHearts}
+      nextRefillAt={nextRefillAt?.toISOString() ?? null}
     />
   );
 }

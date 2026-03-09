@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Icon from "@/components/icons/Icon";
 import Leo from "@/components/mascot/Leo";
@@ -23,13 +24,17 @@ interface PathScreenProps {
   xp: number;
   completedLessonIds: string[];
   dayPlan: DayPlanItem[];
+  currentHearts: number;
+  nextRefillAt: string | null;
 }
 
 function getNodeState(
   lessonId: string,
   completedIds: string[],
-  activeLessonId: string | null
+  activeLessonId: string | null,
+  noHearts: boolean
 ): NodeState {
+  if (noHearts) return "locked";
   if (activeLessonId === lessonId) return "active";
   if (completedIds.includes(lessonId)) return "complete";
   return "locked";
@@ -48,9 +53,33 @@ export default function PathScreen({
   xp,
   completedLessonIds,
   dayPlan,
+  currentHearts,
+  nextRefillAt: nextRefillAtStr,
 }: PathScreenProps) {
   const activeIndex = dayPlan.findIndex((d) => !completedLessonIds.includes(d.learn));
   const activeLessonId = activeIndex >= 0 ? dayPlan[activeIndex].learn : null;
+  const noHearts = currentHearts === 0;
+
+  const [countdown, setCountdown] = useState("0:00:00");
+  const nextRefillAt = nextRefillAtStr ? new Date(nextRefillAtStr) : null;
+
+  useEffect(() => {
+    if (!nextRefillAt || !noHearts) return;
+    const tick = () => {
+      const diff = nextRefillAt.getTime() - Date.now();
+      if (diff <= 0) {
+        setCountdown("0:00:00");
+        return;
+      }
+      const h = Math.floor(diff / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      setCountdown(`${h}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`);
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [nextRefillAt, noHearts]);
 
   return (
     <div
@@ -88,7 +117,7 @@ export default function PathScreen({
               margin: 0,
             }}
           >
-            Good morning, {firstName || "friend"}.
+            Peace be with you, {firstName || "friend"}.
           </h1>
         </div>
 
@@ -159,10 +188,32 @@ export default function PathScreen({
               padding: "12px 20px",
               display: "flex",
               alignItems: "center",
-              gap: 8,
+              gap: 4,
             }}
           >
-            <Icon name="heart" size={20} color="white" />
+            {[1, 2, 3, 4, 5].map((i) => (
+              <Icon
+                key={i}
+                name="heart"
+                size={20}
+                color={i <= currentHearts ? "#DC2626" : "rgba(255,255,255,0.4)"}
+              />
+            ))}
+          </div>
+        </div>
+
+        {noHearts && (
+          <div
+            style={{
+              background: "rgba(255,255,255,0.15)",
+              backdropFilter: "blur(8px)",
+              borderRadius: 12,
+              border: "1px solid rgba(255,255,255,0.25)",
+              padding: "16px 20px",
+              marginBottom: 24,
+              textAlign: "center",
+            }}
+          >
             <span
               style={{
                 fontFamily: "'Nunito', system-ui, sans-serif",
@@ -171,10 +222,10 @@ export default function PathScreen({
                 fontSize: 14,
               }}
             >
-              3 hearts
+              Next heart in {countdown}
             </span>
           </div>
-        </div>
+        )}
 
         {/* Path section */}
         <div style={{ position: "relative" }}>
@@ -197,7 +248,7 @@ export default function PathScreen({
               const lessonId = day.learn;
               const lesson = LESSONS[lessonId as keyof typeof LESSONS];
               const title = lesson?.title ?? day.title;
-              const state = getNodeState(lessonId, completedLessonIds, activeLessonId);
+              const state = getNodeState(lessonId, completedLessonIds, activeLessonId, noHearts);
               const alignment = getAlignment(index);
 
               const nodeContent = (

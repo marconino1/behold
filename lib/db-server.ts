@@ -70,6 +70,31 @@ export async function getStreakServer(
   };
 }
 
+export async function getHeartsStatusServer(
+  userId: string
+): Promise<{ hearts: number; lastLostAt: string | null }> {
+  const supabase = await createServerSupabaseClient();
+  const { data, error } = (await withTimeout(
+    supabase
+      .from("hearts_status")
+      .select("hearts, last_lost_at")
+      .eq("user_id", userId)
+      .maybeSingle()
+      .then((r) => r),
+    DB_QUERY_TIMEOUT_MS,
+    "getHeartsStatus timed out"
+  ).catch(() => ({ data: null, error: { message: "timeout" } }))) as {
+    data: { hearts: number; last_lost_at: string | null } | null;
+    error: any;
+  };
+
+  if (error || !data) return { hearts: 5, lastLostAt: null };
+  return {
+    hearts: data.hearts ?? 5,
+    lastLostAt: data.last_lost_at ?? null,
+  };
+}
+
 export async function getTotalXPServer(userId: string): Promise<number> {
   const supabase = await createServerSupabaseClient();
   const { data, error } = (await withTimeout(

@@ -1,4 +1,57 @@
 import { createClient } from "@/lib/supabase/client";
+import { calculateCurrentHearts } from "@/lib/hearts";
+
+export async function getHeartsStatus(
+  userId: string
+): Promise<{ hearts: number; lastLostAt: string | null }> {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("hearts_status")
+    .select("hearts, last_lost_at")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (error) throw error;
+  if (!data) return { hearts: 5, lastLostAt: null };
+  return {
+    hearts: data.hearts ?? 5,
+    lastLostAt: data.last_lost_at ?? null,
+  };
+}
+
+export async function loseHeart(
+  userId: string
+): Promise<{ hearts: number; lastLostAt: string }> {
+  const supabase = createClient();
+  const status = await getHeartsStatus(userId);
+  const { currentHearts } = calculateCurrentHearts(
+    status.hearts,
+    status.lastLostAt
+  );
+
+  if (currentHearts <= 0) {
+    return {
+      hearts: 0,
+      lastLostAt: status.lastLostAt ?? new Date().toISOString(),
+    };
+  }
+
+  const newHearts = currentHearts - 1;
+  const now = new Date().toISOString();
+
+  const { error } = await supabase.from("hearts_status").upsert(
+    {
+      user_id: userId,
+      hearts: newHearts,
+      last_lost_at: now,
+      updated_at: now,
+    },
+    { onConflict: "user_id" }
+  );
+
+  if (error) throw error;
+  return { hearts: newHearts, lastLostAt: now };
+}
 
 export async function getUserProgress(userId: string): Promise<string[]> {
   const supabase = createClient();
