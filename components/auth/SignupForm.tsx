@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+import HCaptcha from "@hcaptcha/react-hcaptcha";
 import Link from "next/link";
 import Leo from "@/components/mascot/Leo";
 import Button from "@/components/ui/Button";
 import { createClient } from "@/lib/supabase/client";
+
+console.log("hCaptcha key:", process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY);
 
 const GRADIENT =
   "linear-gradient(180deg, #0C4A6E 0%, #0369A1 50%, #0EA5E9 100%)";
@@ -12,6 +15,8 @@ const GRADIENT =
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function SignupForm() {
+  const captchaRef = useRef<HCaptcha>(null);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -47,18 +52,28 @@ export default function SignupForm() {
 
     setLoading(true);
 
+    const siteKey = process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY;
+    if (!siteKey) {
+      setError("Captcha is not configured. Please contact support.");
+      setLoading(false);
+      return;
+    }
+
     createClient()
       .auth.signUp({
         email,
         password,
         options: {
           data: { first_name: firstName.trim() },
+          captchaToken: captchaToken ?? undefined,
         },
       })
       .then(({ error: signUpError }) => {
         setLoading(false);
         if (signUpError) {
           setError(signUpError.message);
+          captchaRef.current?.resetCaptcha();
+          setCaptchaToken(null);
           return;
         }
         setSuccess(true);
@@ -341,12 +356,35 @@ export default function SignupForm() {
             </p>
           )}
 
+          {process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY ? (
+            <div style={{ minHeight: 78 }}>
+              <HCaptcha
+                sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY}
+                onVerify={(token) => setCaptchaToken(token)}
+                onExpire={() => setCaptchaToken(null)}
+                ref={captchaRef}
+              />
+            </div>
+          ) : (
+            <p
+              style={{
+                fontFamily: "'Nunito', system-ui, sans-serif",
+                fontSize: 14,
+                color: "#DC2626",
+                margin: 0,
+              }}
+            >
+              Captcha is not configured (NEXT_PUBLIC_HCAPTCHA_SITE_KEY missing).
+              Sign up will fail until this is set.
+            </p>
+          )}
+
           <Button
             type="submit"
             variant="primary"
             fullWidth
             loading={loading}
-            disabled={loading}
+            disabled={loading || !process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY || !captchaToken}
           >
             Create account
           </Button>
