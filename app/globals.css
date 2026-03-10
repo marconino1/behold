@@ -13,6 +13,7 @@
   --color-sky-pale: #E0F2FE;
   --color-text: #2C2016;
   --color-muted: #8C7A62;
+  --color-text-light: #9CA3AF;
   --color-bg: #FAF7F2;
   --color-stone: #F2EDE4;
   --color-surface: #FDF9F3;
@@ -80,5 +81,10 @@ h1, h2, h3 {
 .animate-slide-up { animation: slide-up 0.4s ease-out; }
 .animate-pulse-gold { animation: pulse-gold 1.5s ease-in-out 3; }
 .animate-pulse-gold-infinite { animation: pulse-gold 1.5s ease-in-out infinite; }
+@keyframes pulse-ring-expand {
+  0%, 100% { box-shadow: 0 0 0 0 var(--pulse-ring-color, rgba(255,255,255,0.4)); }
+  50% { box-shadow: 0 0 0 12px transparent; }
+}
+.animate-pulse-ring { animation: pulse-ring-expand 2s ease-out infinite; }
 .animate-spin { animation: spin 0.8s linear infinite; }
 .btn-press { animation: btn-press 0.15s ease-out; }

@@ -1,20 +1,13 @@
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { getServerUserId } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { withTimeout } from "@/lib/with-timeout";
 import Link from "next/link";
 import Leo from "@/components/mascot/Leo";
 import Icon from "@/components/icons/Icon";
 import WaitlistForm from "@/components/landing/WaitlistForm";
 
 export default async function LandingPage() {
-  const supabase = await createServerSupabaseClient();
-  const { data } = await withTimeout(
-    supabase.auth.getSession(),
-    3000,
-    "Session check timed out"
-  ).catch(() => ({ data: { session: null } }));
-
-  if (data?.session?.user) {
+  const userId = await getServerUserId();
+  if (userId) {
     redirect("/dashboard");
   }
 

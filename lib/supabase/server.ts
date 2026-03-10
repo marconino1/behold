@@ -1,7 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { cache } from "react";
 
-export async function createServerSupabaseClient() {
+export const createServerSupabaseClient = cache(async () => {
   const cookieStore = await cookies();
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -21,4 +22,10 @@ export async function createServerSupabaseClient() {
       },
     }
   );
-}
+});
+
+export const getServerUserId = cache(async (): Promise<string | null> => {
+  const supabase = await createServerSupabaseClient();
+  const { data } = await supabase.auth.getUser();
+  return data?.user?.id ?? null;
+});
