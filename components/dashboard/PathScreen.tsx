@@ -456,17 +456,6 @@ export default function PathScreen({
                       </span>
                     </div>
                   )}
-                  {index > 0 && (
-                    <div
-                      style={{
-                        width: 2,
-                        height: 16,
-                        borderLeft: "2px dotted rgba(255,255,255,0.25)",
-                        marginLeft: -1,
-                        pointerEvents: "none",
-                      }}
-                    />
-                  )}
                   {isTappable ? (
                     <Link
                       ref={ref as React.Ref<HTMLAnchorElement>}

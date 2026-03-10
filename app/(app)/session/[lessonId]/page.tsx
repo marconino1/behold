@@ -74,6 +74,16 @@ export default function SessionPage() {
   const [prayerCelebrating, setPrayerCelebrating] = useState(false);
   const [completeMounted, setCompleteMounted] = useState(false);
 
+  type AnsweredCardState = {
+    selectedAnswer: string | null;
+    isCorrect: boolean | null;
+    fillBlankSelectedIndices: number[];
+    sequenceValues: string[];
+  };
+  const [answeredCardsState, setAnsweredCardsState] = useState<
+    Record<number, AnsweredCardState>
+  >({});
+
   useEffect(() => {
     createClient()
       .auth.getUser()
@@ -83,6 +93,16 @@ export default function SessionPage() {
   }, []);
 
   useEffect(() => {
+    const saved = answeredCardsState[currentCard];
+    if (saved) {
+      setCardAnswered(true);
+      setSelectedAnswer(saved.selectedAnswer);
+      setIsCorrect(saved.isCorrect);
+      setShowFeedback(true);
+      setFillBlankSelectedIndices(saved.fillBlankSelectedIndices ?? []);
+      setSequenceValues(saved.sequenceValues ?? []);
+      return;
+    }
     const card = lesson?.cards[currentCard];
     if (card?.mechanic === "fill_blank" && card?.blanks) {
       const targetLen = card.blanks.length;
@@ -93,7 +113,8 @@ export default function SessionPage() {
     } else {
       setFillBlankSelectedIndices([]);
     }
-  }, [currentCard, lesson?.cards, lessonId]);
+    setSequenceValues([]);
+  }, [currentCard, lesson?.cards, lessonId, answeredCardsState]);
 
   useEffect(() => {
     if (!userId) return;
@@ -214,6 +235,17 @@ export default function SessionPage() {
   ]);
 
   const handleContinue = useCallback(() => {
+    if (cardAnswered) {
+      setAnsweredCardsState((prev) => ({
+        ...prev,
+        [currentCard]: {
+          selectedAnswer,
+          isCorrect,
+          fillBlankSelectedIndices: [...fillBlankSelectedIndices],
+          sequenceValues: [...sequenceValues],
+        },
+      }));
+    }
     setCardAnswered(false);
     setSelectedAnswer(null);
     setIsCorrect(null);
@@ -226,6 +258,19 @@ export default function SessionPage() {
     } else {
       setCurrentCard((c) => c + 1);
     }
+  }, [
+    currentCard,
+    cardAnswered,
+    selectedAnswer,
+    isCorrect,
+    fillBlankSelectedIndices,
+    sequenceValues,
+  ]);
+
+  const handleBack = useCallback(() => {
+    if (currentCard > 0) {
+      setCurrentCard((c) => c - 1);
+    }
   }, [currentCard]);
 
   const handleTrueFalse = useCallback(
@@ -234,6 +279,7 @@ export default function SessionPage() {
       const card = lesson.cards[currentCard];
       const correct = card.correct === value;
       setCardAnswered(true);
+      setSelectedAnswer(value ? "true" : "false");
       setIsCorrect(correct);
       setShowFeedback(true);
 
@@ -432,6 +478,8 @@ export default function SessionPage() {
 
   if (screen === "prayer" && lesson.prayer) {
     const prayer = lesson.prayer;
+    const prayerLines = prayer.text;
+
     return (
       <div
         style={{
@@ -440,7 +488,9 @@ export default function SessionPage() {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          justifyContent: "center",
           padding: "40px 24px",
+          textAlign: "center",
         }}
       >
         <p
@@ -458,7 +508,7 @@ export default function SessionPage() {
         <h2
           style={{
             fontFamily: "'Playfair Display', Georgia, serif",
-            fontSize: 26,
+            fontSize: 28,
             fontWeight: 700,
             color: "white",
             marginBottom: 24,
@@ -468,28 +518,27 @@ export default function SessionPage() {
         </h2>
         <div
           style={{
-            maxWidth: 400,
+            maxWidth: 480,
             width: "100%",
+            margin: "0 auto 16px auto",
             background: "white",
             borderRadius: 16,
             padding: 24,
             boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
             maxHeight: 300,
             overflowY: "auto",
-            marginBottom: 16,
+            textAlign: "center",
           }}
         >
-          {prayer.text.map((line, i) => (
+          {prayerLines.map((line: string, i: number) => (
             <p
               key={i}
-              className="animate-fade-in"
               style={{
                 fontFamily: "'Playfair Display', Georgia, serif",
                 fontStyle: "italic",
                 fontSize: 18,
                 color: "#0C4A6E",
                 marginBottom: 12,
-                animationDelay: `${i * 150}ms`,
               }}
             >
               {line}
@@ -503,24 +552,36 @@ export default function SessionPage() {
             color: "rgba(255,255,255,0.7)",
             textAlign: "center",
             marginBottom: 24,
-            maxWidth: 400,
+            maxWidth: 340,
+            margin: "0 auto 24px auto",
           }}
         >
           {prayer.note}
         </p>
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <div style={{ marginBottom: 8 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12, alignItems: "center" }}>
+          <div style={{ margin: "24px auto" }}>
             <Leo
               state={prayerCelebrating ? "celebrating" : "idle"}
               size="session"
             />
           </div>
-          <Button variant="primary" onClick={handlePrayerDone}>
-            I prayed this
-          </Button>
-          <Button variant="ghost" onClick={handleSkipPrayer}>
-            Skip for now
-          </Button>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 12,
+              width: "100%",
+              maxWidth: 320,
+              margin: "0 auto",
+            }}
+          >
+            <Button variant="primary" onClick={handlePrayerDone}>
+              I prayed this
+            </Button>
+            <Button variant="ghost" onClick={handleSkipPrayer}>
+              Skip for now
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -651,6 +712,20 @@ export default function SessionPage() {
             zIndex: 10,
           }}
         >
+          {currentCard > 0 && (
+            <button
+              onClick={handleBack}
+              style={{
+                background: "none",
+                border: "none",
+                padding: 8,
+                cursor: "pointer",
+              }}
+              aria-label="Previous card"
+            >
+              <Icon name="arrow-left" size={24} color="#2C2016" />
+            </button>
+          )}
           <button
             onClick={handleBackConfirm}
             style={{

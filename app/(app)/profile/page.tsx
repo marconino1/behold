@@ -307,7 +307,8 @@ export default async function ProfilePage() {
           </div>
         </section>
 
-        {/* SECTION — YOUR STARTING POINT */}
+        {/* DISABLED — level selection onboarding. Commented out for now, revisit later.
+        SECTION — YOUR STARTING POINT
         <section
           style={{
             background: "white",
@@ -360,6 +361,7 @@ export default async function ProfilePage() {
             </Link>
           </div>
         </section>
+        */}
 
         {/* SECTION 3 — TIER PROGRESS */}
         <section

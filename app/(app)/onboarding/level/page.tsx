@@ -1,3 +1,6 @@
+// DISABLED — level selection onboarding
+// Commented out for now, revisit later
+
 "use client";
 
 import { useCallback, useEffect, useState } from "react";

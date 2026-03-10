@@ -43,9 +43,10 @@ export default async function DashboardPage() {
   const skippedLessonIds = lessonProgress.skippedLessonIds;
   const xp = lessonProgress.totalXP;
 
-  if (!profile?.onboarding_complete) {
-    redirect("/onboarding/level");
-  }
+  // DISABLED — level selection onboarding. New users go straight to dashboard.
+  // if (!profile?.onboarding_complete) {
+  //   redirect("/onboarding/level");
+  // }
 
   const { currentHearts, nextRefillAt } = calculateCurrentHearts(
     heartsStatus.hearts,

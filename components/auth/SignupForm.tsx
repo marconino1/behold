@@ -64,6 +64,12 @@ export default function SignupForm() {
       return;
     }
 
+    const isDev = process.env.NODE_ENV === "development";
+    if (!isDev && !captchaToken) {
+      setError("Please complete the captcha");
+      return;
+    }
+
     setLoading(true);
 
     createClient()
@@ -72,6 +78,7 @@ export default function SignupForm() {
         password,
         options: {
           data: { first_name: firstName.trim() },
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
       })
       .then(({ error: signUpError }) => {
