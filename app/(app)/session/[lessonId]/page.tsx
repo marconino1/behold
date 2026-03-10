@@ -277,9 +277,9 @@ export default function SessionPage() {
     });
   }, []);
 
-  const handleSequenceSelect = useCallback((word: string) => {
+  const handleSequenceSelect = useCallback((word: string, maxSlots: number = 4) => {
     setSequenceValues((prev) => {
-      if (prev.length >= 4 || prev.includes(word)) return prev;
+      if (prev.length >= maxSlots || prev.includes(word)) return prev;
       return [...prev, word];
     });
   }, []);
@@ -611,7 +611,10 @@ export default function SessionPage() {
       fillBlankSelectedIndices.length === card.blanks.length &&
       fillBlankSelectedIndices.every((i) => i >= 0);
     const canCheckSequence =
-      card.mechanic === "sequence" && sequenceValues.length === 4;
+      card.mechanic === "sequence" &&
+      card.correct &&
+      Array.isArray(card.correct) &&
+      sequenceValues.length === card.correct.length;
     const canCheckMC =
       (card.mechanic === "multiple_choice" || card.mechanic === "tap_correct") &&
       selectedAnswer !== null;
@@ -969,7 +972,10 @@ export default function SessionPage() {
                         flexWrap: "wrap",
                       }}
                     >
-                      {[0, 1, 2, 3].map((i) => (
+                      {Array.from(
+                        { length: card.words?.length ?? 4 },
+                        (_, i) => i
+                      ).map((i) => (
                         <div
                           key={i}
                           onClick={() =>
@@ -1001,7 +1007,14 @@ export default function SessionPage() {
                       {wordBankSequence.map((w) => (
                         <button
                           key={w}
-                          onClick={() => handleSequenceSelect(w)}
+                          onClick={() =>
+                            handleSequenceSelect(
+                              w,
+                              card.correct && Array.isArray(card.correct)
+                                ? card.correct.length
+                                : 4
+                            )
+                          }
                           style={{
                             padding: "8px 16px",
                             borderRadius: 9999,
