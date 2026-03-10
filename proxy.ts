@@ -40,7 +40,6 @@ export async function proxy(request: NextRequest) {
   );
 
   try {
-    await withTimeout(supabase.auth.getClaims(), AUTH_TIMEOUT_MS);
     const { data: { user } } = await withTimeout(
       supabase.auth.getUser(),
       AUTH_TIMEOUT_MS

@@ -77,10 +77,9 @@ export const LESSONS = {
         mechanic: "fill_blank",
         prompt: "Complete the sentence:",
         sentence: "God loves you not because of what you've [BLANK], but because you [BLANK].",
-        wordBank: ["done","deserved","achieved","impressed him","exist","pray","try","hope"],
         blanks: [
-          { correct: "done" },
-          { correct: "exist" },
+          { options: ["done","earned","believed","achieved"], correct: "done" },
+          { options: ["exist","pray","try","hope"], correct: "exist" },
         ],
         feedback: "God's love precedes everything you could ever do. This is what makes Christianity radical — every other system is built on earning favor. The Gospel begins by overturning that logic entirely.",
       },
@@ -178,12 +177,10 @@ export const LESSONS = {
         mechanic: "fill_blank",
         prompt: "Complete the sentence:",
         sentence: "When God revealed his name to Moses, he said: 'I [BLANK] WHO [BLANK].'",
-        wordBank: ["AM", "WHO", "AM", "WAS", "WILL BE", "IS NOT"],
         blanks: [
-          { correct: "AM" },
-          { correct: "AM" },
+          { options: ["AM","WAS","WILL BE","AM NOT"], correct: "AM" },
+          { options: ["AM","CREATES","KNOWS","LOVES"], correct: "AM" },
         ],
-        wordBank: ["AM", "WHO", "AM", "WAS", "WILL BE", "AM NOT"],
         feedback: "Yahweh — 'I AM WHO AM' — is the most philosophically dense thing God ever said. It means: God has no origin. He does not exist because something caused him. He is existence itself. Every creature exists by participation in his being; God exists by his own nature.",
       },
       {
@@ -230,7 +227,7 @@ export const LESSONS = {
         teaching: "All of this doctrinal content — the Five Ways, the divine attributes, the name Yahweh — is not the end. It is the beginning. Augustine, who had studied philosophy thoroughly before his conversion, wrote: 'You have made us for yourself, O Lord, and our heart is restless until it rests in you.' Knowing about God and knowing God are two different things. The first is catechesis. The second is what catechesis is ordered toward.",
         ccc: "CCC 26–30",
         mechanic: "sequence",
-        prompt: "Put these four steps in order — starting with how we first discover God exists, ending with the ultimate goal:",
+        prompt: "Arrange these in order from foundation to goal:",
         words: ["Knowing God personally","Reason discovers God exists","Revelation gives God's name","Catechesis teaches who God is"],
         correct: ["Reason discovers God exists","Revelation gives God's name","Catechesis teaches who God is","Knowing God personally"],
         feedback: "Augustine's 'restless heart' is not poetic exaggeration — it is a precise anthropological claim. Every human desire is ultimately a desire for God, often misdirected. Catechesis exists not to produce knowledgeable Catholics but to remove the obstacles between a soul and the God it was made for.",
@@ -325,13 +322,13 @@ export const LESSONS = {
       {
         id: 5,
         sectionTitle: "How to speak about it without heresy.",
-        teaching: "The Church gives us precise language to keep us from going off the rails. Four rules: (1) There is only ONE God — not three. (2) The three Persons are REALLY distinct — not just three modes or masks. (3) The three Persons are EQUAL in divinity — the Son and Spirit are not lesser. (4) Each Person is wholly God — the Father, Son, and Spirit are each fully divine. Everything else in Trinitarian theology is the expansion and application of these rules. When you feel confused, return to them.",
+        teaching: "The Church gives us precise language to keep us from going off the rails. Three rules: (1) There is only ONE God — not three. (2) The three Persons are REALLY distinct — not just three modes or masks. (3) The three Persons are EQUAL in divinity — the Son and Spirit are not lesser. Everything else in Trinitarian theology is the expansion and application of these three rules. When you feel confused, return to them.",
         ccc: "CCC 252–256",
         mechanic: "sequence",
-        prompt: "Put the four Trinitarian rules in order as the Church teaches them:",
-        words: ["Three Persons are fully equal","Only one God exists","Three Persons are truly distinct","Each Person is wholly God"],
-        correct: ["Only one God exists","Three Persons are truly distinct","Three Persons are fully equal","Each Person is wholly God"],
-        feedback: "Unity first, then real distinction, then full equality, then the fullness of each Person. Any error in Trinitarian theology violates at least one of these four. Modalism violates rule 2. Tritheism violates rule 1. Arianism violates rule 3. The four rules together constitute the minimum Trinitarian grammar every Catholic should know.",
+        prompt: "Put the three Trinitarian rules in order as the Church teaches them:",
+        words: ["Three Persons are fully equal","Only one God exists","Three Persons are truly distinct"],
+        correct: ["Only one God exists","Three Persons are truly distinct","Three Persons are fully equal"],
+        feedback: "Unity first, then real distinction, then full equality. Any error in Trinitarian theology violates at least one of these three. Modalism violates rule 2. Tritheism violates rule 1. Arianism violates rule 3. The three rules together constitute the minimum Trinitarian grammar every Catholic should know.",
       },
     ],
   },
@@ -372,10 +369,9 @@ export const LESSONS = {
         mechanic: "fill_blank",
         prompt: "Complete the foundational verse:",
         sentence: "God said: 'Let us make man in our [BLANK], after our [BLANK].'",
-        wordBank: ["image", "likeness", "form", "design", "will", "plan"],
         blanks: [
-          { correct: "image" },
-          { correct: "likeness" },
+          { options: ["image","likeness","form","design"], correct: "image" },
+          { options: ["likeness","image","will","plan"], correct: "likeness" },
         ],
         feedback: "The distinction between 'image' (tselem) and 'likeness' (demuth) has been debated since Origen. Irenaeus saw image as the rational nature (indelible) and likeness as the supernatural grace (losable by sin). Either way, both together describe something utterly unique in creation: a being who reflects God himself.",
       },
@@ -511,7 +507,7 @@ export const LESSONS = {
         prompt: "True or false?",
         statement: "A conscience that has been incorrectly formed still binds the person who acts on it.",
         correct: true,
-        feedback: "This is the doctrine of invincible ignorance and erroneous conscience. If you act on a well-formed but mistaken conscience, you may not be subjectively guilty — but the Church is equally clear that you have a positive obligation to form your conscience. 'I didn't know' is only exculpatory if the ignorance was genuinely unavoidable. The obligation to form conscience well means that claiming ignorance does not eliminate the duty to seek truth. Invincible ignorance excuses; vincible ignorance — ignorance you could have resolved but didn't — does not.",
+        feedback: "This is the doctrine of invincible ignorance and erroneous conscience. If you act on a well-formed but mistaken conscience, you may not be subjectively guilty — but the Church is equally clear that you have a positive obligation to form your conscience. 'I didn't know' is only exculpatory if the ignorance was genuinely unavoidable.",
       },
       {
         id: 4,
@@ -611,9 +607,9 @@ export const LESSONS = {
         ccc: "CCC 375–379; 405",
         mechanic: "sequence",
         prompt: "Arrange the four gifts lost at the Fall:",
-        words: ["Freedom from death (immortality)","Friendship with God (sanctifying grace)","Freedom from suffering (impassibility)","Right order of passions (integrity)"],
-        correct: ["Friendship with God (sanctifying grace)","Right order of passions (integrity)","Freedom from death (immortality)","Freedom from suffering (impassibility)"],
-        feedback: "The four gifts are: sanctifying grace (the most important — its loss is the essence of original sin), integrity (passions subject to reason), immortality (freedom from death), and impassibility (freedom from suffering). These last three are called preternatural — above nature but not supernatural. All four were lost in the Fall; all four are restored (in different forms) by redemption and resurrection.",
+        words: ["Freedom from death (immortality)","Friendship with God (sanctifying grace)","Freedom from suffering (integrity of desire)","Right order of passions (integrity)"],
+        correct: ["Friendship with God (sanctifying grace)","Right order of passions (integrity)","Freedom from death (immortality)","Freedom from suffering (integrity of desire)"],
+        feedback: "Notice the order matters theologically: the loss of grace comes first, then the cascading disorder that follows. The Church teaches that the natural gifts (reason, will, body-soul unity) remain after the Fall — damaged but intact. This is why pagans can know the natural law. But the supernatural gifts require Christ to restore.",
       },
       {
         id: 4,
@@ -1043,7 +1039,7 @@ export const LESSONS = {
           { options: ["73", "66", "72", "74"], correct: "73" },
           { options: ["7", "5", "4", "9"], correct: "7" },
         ],
-        feedback: "The 7 books are called the deuterocanonical books (Catholic) or the Apocrypha (Protestant). Luther's stated criterion was conformity with the Hebrew canon (the Palestinian canon used by rabbinic Judaism), which excluded these books. Critics noted, however, that the early Church and the New Testament authors consistently used the Septuagint — the Greek Old Testament — which includes them.",
+        feedback: "The 7 books are called the deuterocanonical books (Catholic) or the Apocrypha (Protestant). Luther's stated reason for removing them was partly that they supported Catholic doctrines — Maccabees 12 references prayers for the dead, which grounds the practice of praying for the holy souls. The early Church, including the Fathers, consistently cited these books as Scripture.",
       },
       {
         id: 4,
@@ -1487,46 +1483,6 @@ export const LESSONS = {
 // etc.
 // ═══════════════════════════════════════════════════════════════════
 
-export const TIER_CONFIG = {
-  entry: {
-    label: "Entry",
-    lessons: ["K0"],
-    color: "#5B8A6F",
-    colorLight: "#E8F0EA",
-  },
-  foundation: {
-    label: "Foundation",
-    lessons: ["A1", "A2", "A3", "B1", "B2", "B3", "D1", "D2", "D3", "P1a", "P1b"],
-    color: "#2E6EA6",
-    colorLight: "#E8F3FC",
-  },
-  encounter: {
-    label: "Encounter",
-    lessons: ["P2b", "C1", "C3", "F3"],
-    color: "#B07D20",
-    colorLight: "#FDF3E3",
-  },
-  moralLife: {
-    label: "Moral Life",
-    lessons: ["G1"],
-    color: "#6D3FBE",
-    colorLight: "#F3EFFE",
-  },
-  depth: {
-    label: "Depth",
-    lessons: ["H1"],
-    color: "#B84040",
-    colorLight: "#FDEAEA",
-  },
-};
-
-// Curriculum order for onboarding "skipped" logic and path screen.
-// Flat array in unlock order — used to determine which lessons come before/after a starting point.
-export const LESSON_ORDER = [
-  "K0", "A1", "A2", "B1", "B2", "B3", "A3", "D1", "D2", "D3",
-  "P1a", "P1b", "P2b", "C1", "C3", "F3", "G1", "H1",
-];
-
 export const DAY_PLAN = [
   { day:1,  learn:"K0",  prayer:"P1a",  title:"Day 1 — The Kerygma" },
   { day:2,  learn:"A1",  prayer:"P1a",  title:"Day 2 — Who Is God?" },
@@ -1538,11 +1494,7 @@ export const DAY_PLAN = [
   { day:8,  learn:"D1",  prayer:"P1b",  title:"Day 8 — What Is Scripture?" },
   { day:9,  learn:"D2",  prayer:"P1b",  title:"Day 9 — How to Read the Bible" },
   { day:10, learn:"D3",  prayer:"P2b",  title:"Day 10 — Salvation History: OT" },
-  { day:11, learn:"C1",  prayer:"P2b",  title:"Day 11 — The Incarnation" },
-  { day:12, learn:"C3",  prayer:"P2b",  title:"Day 12 — The Paschal Mystery" },
-  { day:13, learn:"F3",  prayer:"P2b",  title:"Day 13 — The Eucharist" },
-  { day:14, learn:"G1",  prayer:"P2b",  title:"Day 14 — The Ultimate End & Beatitude" },
-  { day:15, learn:"H1",  prayer:"P2b",  title:"Day 15 — What Is Prayer?" },
+  // Days 11–43 follow curriculum architecture
 ];
 
 export default LESSONS;

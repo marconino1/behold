@@ -1,13 +1,11 @@
 import {
-  getUserProgressServer,
   getHeartsStatusServer,
+  getLessonProgressDataServer,
   getProfileServer,
   getStreakServer,
-  getTotalXPServer,
 } from "@/lib/db-server";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { getServerUserId } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { withTimeout } from "@/lib/with-timeout";
 import { DAY_PLAN } from "@/content/behold_lesson_content.js";
 import { calculateCurrentHearts } from "@/lib/hearts";
 import PathScreen from "@/components/dashboard/PathScreen";
@@ -16,54 +14,46 @@ export const metadata = {
   title: "Behold — Your Path",
 };
 
-const DB_TIMEOUT_MS = 8000;
-
-type DashboardData = [
-  { first_name: string; created_at: string | null } | null,
-  string[],
-  { current: number; longest: number },
-  number,
-  { hearts: number; lastLostAt: string | null },
-];
-
 export default async function DashboardPage() {
-  const supabase = await createServerSupabaseClient();
-  const { data } = await withTimeout(
-    supabase.auth.getSession(),
-    5000,
-    "Session check timed out"
-  ).catch(() => ({ data: { session: null } }));
-
-  const userId = data?.session?.user?.id;
+  const userId = await getServerUserId();
   if (!userId) {
     redirect("/login");
   }
 
-  const [profile, completedLessonIds, streak, xp, heartsStatus]: DashboardData =
-    await withTimeout(
-      Promise.all([
-        getProfileServer(userId),
-        getUserProgressServer(userId),
-        getStreakServer(userId),
-        getTotalXPServer(userId),
-        getHeartsStatusServer(userId),
-      ]),
-      DB_TIMEOUT_MS,
-      "Loading your progress timed out"
-    ).catch(
-      (): DashboardData => [
-        { first_name: "", created_at: null },
-        [],
-        { current: 0, longest: 0 },
-        0,
-        { hearts: 5, lastLostAt: null },
-      ]
-    );
+  let profile: Awaited<ReturnType<typeof getProfileServer>>;
+  let lessonProgress: Awaited<ReturnType<typeof getLessonProgressDataServer>>;
+  let streak: Awaited<ReturnType<typeof getStreakServer>>;
+  let heartsStatus: Awaited<ReturnType<typeof getHeartsStatusServer>>;
+
+  try {
+    [profile, lessonProgress, streak, heartsStatus] = await Promise.all([
+      getProfileServer(userId),
+      getLessonProgressDataServer(userId),
+      getStreakServer(userId),
+      getHeartsStatusServer(userId),
+    ]);
+  } catch {
+    profile = null;
+    lessonProgress = { completedLessonIds: [], skippedLessonIds: [], totalXP: 0 };
+    streak = { current: 0, longest: 0 };
+    heartsStatus = { hearts: 5, lastLostAt: null };
+  }
+
+  const completedLessonIds = lessonProgress.completedLessonIds;
+  const skippedLessonIds = lessonProgress.skippedLessonIds;
+  const xp = lessonProgress.totalXP;
+
+  // DISABLED — level selection onboarding. New users go straight to dashboard.
+  // if (!profile?.onboarding_complete) {
+  //   redirect("/onboarding/level");
+  // }
 
   const { currentHearts, nextRefillAt } = calculateCurrentHearts(
     heartsStatus.hearts,
     heartsStatus.lastLostAt
   );
+
+  const startingLesson = profile?.starting_lesson ?? "K0";
 
   return (
     <PathScreen
@@ -71,6 +61,8 @@ export default async function DashboardPage() {
       streak={streak.current}
       xp={xp}
       completedLessonIds={completedLessonIds}
+      skippedLessonIds={skippedLessonIds}
+      startingLesson={startingLesson}
       dayPlan={DAY_PLAN}
       currentHearts={currentHearts}
       nextRefillAt={nextRefillAt?.toISOString() ?? null}

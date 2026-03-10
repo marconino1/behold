@@ -1,15 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Icon from "@/components/icons/Icon";
 import Leo from "@/components/mascot/Leo";
-import { LESSONS } from "@/content/behold_lesson_content.js";
+import {
+  LESSONS,
+  LESSON_ORDER,
+  TIER_CONFIG,
+} from "@/content/behold_lesson_content.js";
 
 const GRADIENT =
   "linear-gradient(180deg, #0C4A6E 0%, #0369A1 50%, #0EA5E9 100%)";
 
-type NodeState = "complete" | "active" | "locked";
+type NodeState = "complete" | "active" | "skipped" | "locked";
 
 interface DayPlanItem {
   day: number;
@@ -23,45 +27,98 @@ interface PathScreenProps {
   streak: number;
   xp: number;
   completedLessonIds: string[];
+  skippedLessonIds: string[];
+  startingLesson: string;
   dayPlan: DayPlanItem[];
   currentHearts: number;
   nextRefillAt: string | null;
 }
 
+type TierKey = keyof typeof TIER_CONFIG;
+
+function getTierForLesson(lessonId: string): (typeof TIER_CONFIG)[TierKey] | null {
+  for (const tier of Object.values(TIER_CONFIG)) {
+    if (tier.lessons.includes(lessonId)) return tier;
+  }
+  return null;
+}
+
+function hexToRgba(hex: string, alpha: number): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
 function getNodeState(
   lessonId: string,
   completedIds: string[],
+  skippedIds: string[],
   activeLessonId: string | null,
   noHearts: boolean
 ): NodeState {
-  if (noHearts) return "locked";
-  if (activeLessonId === lessonId) return "active";
   if (completedIds.includes(lessonId)) return "complete";
+  if (skippedIds.includes(lessonId)) return "skipped";
+  if (activeLessonId === lessonId) return "active";
+  if (activeLessonId) {
+    const lessonIdx = LESSON_ORDER.indexOf(lessonId);
+    const activeIdx = LESSON_ORDER.indexOf(activeLessonId);
+    if (lessonIdx > activeIdx) return "locked";
+  }
+  if (noHearts) return "locked";
   return "locked";
 }
 
-function getAlignment(index: number): "left" | "center" | "right" {
-  const mod = index % 3;
-  if (mod === 0) return "left";
-  if (mod === 1) return "center";
-  return "right";
+function getStaggerTranslate(index: number): number {
+  const mod = index % 4;
+  if (mod === 0) return -60;
+  if (mod === 1) return 0;
+  if (mod === 2) return 60;
+  return 0;
 }
+
+const NODE_BASE_SHADOW = "0 4px 0 rgba(0,0,0,0.35), 0 6px 12px rgba(0,0,0,0.25)";
 
 export default function PathScreen({
   firstName,
   streak,
   xp,
   completedLessonIds,
+  skippedLessonIds,
+  startingLesson,
   dayPlan,
   currentHearts,
   nextRefillAt: nextRefillAtStr,
 }: PathScreenProps) {
-  const activeIndex = dayPlan.findIndex((d) => !completedLessonIds.includes(d.learn));
+  const startIdx = LESSON_ORDER.indexOf(startingLesson);
+  const activeIndex = dayPlan.findIndex(
+    (d) =>
+      !completedLessonIds.includes(d.learn) &&
+      LESSON_ORDER.indexOf(d.learn) >= startIdx
+  );
   const activeLessonId = activeIndex >= 0 ? dayPlan[activeIndex].learn : null;
   const noHearts = currentHearts === 0;
 
+  const activeNodeRef = useRef<HTMLAnchorElement | HTMLDivElement | null>(null);
   const [countdown, setCountdown] = useState("0:00:00");
   const nextRefillAt = nextRefillAtStr ? new Date(nextRefillAtStr) : null;
+
+  const tierFirstIndex = new Map<string, number>();
+  dayPlan.forEach((d, i) => {
+    const t = getTierForLesson(d.learn);
+    if (t && !tierFirstIndex.has(t.label)) tierFirstIndex.set(t.label, i);
+  });
+
+  useEffect(() => {
+    if (activeLessonId && activeNodeRef.current) {
+      activeNodeRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [activeLessonId]);
 
   useEffect(() => {
     if (!nextRefillAt || !noHearts) return;
@@ -228,84 +285,126 @@ export default function PathScreen({
         )}
 
         {/* Path section */}
+        <style dangerouslySetInnerHTML={{ __html: `
+          .path-node-tappable:active .path-node-circle {
+            transform: translateY(2px) !important;
+            box-shadow: 0 2px 0 rgba(0,0,0,0.35) !important;
+          }
+        `}} />
         <div style={{ position: "relative" }}>
-          {/* Vertical dotted connector */}
-          <div
-            style={{
-              position: "absolute",
-              left: "50%",
-              top: 20,
-              bottom: 20,
-              width: 2,
-              marginLeft: -1,
-              borderLeft: "2px dotted rgba(255,255,255,0.4)",
-              pointerEvents: "none",
-            }}
-          />
-
-          <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
             {dayPlan.map((day, index) => {
               const lessonId = day.learn;
               const lesson = LESSONS[lessonId as keyof typeof LESSONS];
               const title = lesson?.title ?? day.title;
-              const state = getNodeState(lessonId, completedLessonIds, activeLessonId, noHearts);
-              const alignment = getAlignment(index);
+              const state = getNodeState(
+                lessonId,
+                completedLessonIds,
+                skippedLessonIds,
+                activeLessonId,
+                noHearts
+              );
+              const staggerX = getStaggerTranslate(index);
+              const tier = getTierForLesson(lessonId);
+              const isFirstInTier = tier && tierFirstIndex.get(tier.label) === index;
+              const activeShadow =
+                state === "active" && tier?.color
+                  ? `0 4px 0 rgba(0,0,0,0.4), 0 6px 16px ${hexToRgba(tier.color, 0.5)}`
+                  : NODE_BASE_SHADOW;
 
               const nodeContent = (
                 <>
                   {state === "complete" && (
                     <div
+                      className="path-node-circle"
                       style={{
-                        width: 40,
-                        height: 40,
+                        width: 56,
+                        height: 56,
                         borderRadius: "50%",
                         background: "#C8932A",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
+                        boxShadow: NODE_BASE_SHADOW,
+                        transition: "all 80ms ease",
                       }}
                     >
-                      <Icon name="check" size={22} color="white" />
+                      <Icon name="check" size={24} color="white" />
                     </div>
                   )}
                   {state === "active" && (
                     <div
-                      className="animate-pulse-gold-infinite"
                       style={{
-                        width: 52,
-                        height: 52,
-                        borderRadius: "50%",
-                        border: "3px solid white",
                         display: "flex",
+                        flexDirection: "column",
                         alignItems: "center",
-                        justifyContent: "center",
-                        background: "rgba(255,255,255,0.1)",
+                        gap: 6,
                       }}
                     >
                       <Leo state="idle" size="nav" />
+                      <div
+                        className="animate-pulse-ring path-node-circle"
+                        style={{
+                          width: 56,
+                          height: 56,
+                          borderRadius: "50%",
+                          background: tier?.color ?? "#C8932A",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          boxShadow: activeShadow,
+                          transition: "all 80ms ease",
+                          ["--pulse-ring-color" as string]: hexToRgba(tier?.color ?? "#C8932A", 0.4),
+                        }}
+                      >
+                        <Icon name="star" size={24} color="white" />
+                      </div>
+                    </div>
+                  )}
+                  {state === "skipped" && (
+                    <div
+                      className="path-node-circle"
+                      style={{
+                        width: 56,
+                        height: 56,
+                        borderRadius: "50%",
+                        background: "white",
+                        border: `3px solid ${tier?.color ?? "#C8932A"}`,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        boxShadow: NODE_BASE_SHADOW,
+                        transition: "all 80ms ease",
+                      }}
+                    >
+                      <Icon name="unlock" size={24} color={tier?.color ?? "#C8932A"} />
                     </div>
                   )}
                   {state === "locked" && (
                     <div
+                      className="path-node-circle"
                       style={{
-                        width: 40,
-                        height: 40,
+                        width: 56,
+                        height: 56,
                         borderRadius: "50%",
-                        background: "#6B7280",
+                        background: "#1E3A5F",
+                        border: "1px solid rgba(255,255,255,0.15)",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
+                        boxShadow: NODE_BASE_SHADOW,
+                        transition: "all 80ms ease",
                       }}
                     >
-                      <Icon name="lock" size={20} color="white" />
+                      <Icon name="lock" size={24} color="rgba(255,255,255,0.3)" />
                     </div>
                   )}
                   <p
                     style={{
                       fontFamily: "'Nunito', system-ui, sans-serif",
                       fontWeight: state === "active" ? 700 : 400,
-                      fontSize: 14,
-                      color: state === "locked" ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.8)",
+                      fontSize: 13,
+                      color: state === "locked" ? "rgba(255,255,255,0.4)" : "white",
                       marginTop: 8,
                       marginBottom: 0,
                       textAlign: "center",
@@ -319,36 +418,63 @@ export default function PathScreen({
               const wrapperStyle: React.CSSProperties = {
                 display: "flex",
                 flexDirection: "column",
-                alignItems:
-                  alignment === "left"
-                    ? "flex-start"
-                    : alignment === "right"
-                    ? "flex-end"
-                    : "center",
-                marginLeft: alignment === "left" ? 32 : 0,
-                marginRight: alignment === "right" ? 32 : 0,
+                alignItems: "center",
+                transform: `translateX(${staggerX}px)`,
               };
 
-              if (state === "locked") {
-                return (
-                  <div key={day.day} style={wrapperStyle}>
-                    {nodeContent}
-                  </div>
-                );
-              }
+              const isActive = state === "active";
+              const ref = isActive ? activeNodeRef : undefined;
+              const isTappable = state === "complete" || state === "skipped" || state === "active";
 
               return (
-                <Link
-                  key={day.day}
-                  href={`/session/${lessonId}`}
-                  style={{
-                    ...wrapperStyle,
-                    textDecoration: "none",
-                    cursor: "pointer",
-                  }}
-                >
-                  {nodeContent}
-                </Link>
+                <div key={day.day} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                  {isFirstInTier && tier && (
+                    <div
+                      style={{
+                        width: "100%",
+                        height: 38,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        background: tier.color,
+                        borderRadius: 999,
+                        marginTop: 24,
+                        marginBottom: 16,
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontFamily: "'Nunito', system-ui, sans-serif",
+                          fontWeight: 700,
+                          fontSize: 12,
+                          color: "white",
+                          letterSpacing: "0.15em",
+                          textTransform: "uppercase",
+                        }}
+                      >
+                        — {tier.label.toUpperCase()} —
+                      </span>
+                    </div>
+                  )}
+                  {isTappable ? (
+                    <Link
+                      ref={ref as React.Ref<HTMLAnchorElement>}
+                      href={`/session/${lessonId}`}
+                      className="path-node-tappable"
+                      style={{
+                        ...wrapperStyle,
+                        textDecoration: "none",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {nodeContent}
+                    </Link>
+                  ) : (
+                    <div key={day.day} style={{ ...wrapperStyle, cursor: "default" }}>
+                      {nodeContent}
+                    </div>
+                  )}
+                </div>
               );
             })}
           </div>

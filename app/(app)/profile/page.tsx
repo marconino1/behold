@@ -1,12 +1,11 @@
 import {
-  getUserProgressServer,
+  getLessonProgressDataServer,
   getProfileServer,
   getStreakServer,
-  getTotalXPServer,
 } from "@/lib/db-server";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import Link from "next/link";
+import { getServerUserId } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { withTimeout } from "@/lib/with-timeout";
 import { LESSONS } from "@/content/behold_lesson_content.js";
 import Leo from "@/components/mascot/Leo";
 import Icon from "@/components/icons/Icon";
@@ -62,6 +61,13 @@ function buildTierProgress(
   });
 }
 
+const STARTING_LESSON_LABELS: Record<string, string> = {
+  K0: "Beginner",
+  A1: "Journeying",
+  C1: "Confirmed",
+  G1: "Formed",
+};
+
 function formatJourneySince(createdAt: string | null): string {
   if (!createdAt) return "Journeying since recently";
   const d = new Date(createdAt);
@@ -70,46 +76,40 @@ function formatJourneySince(createdAt: string | null): string {
   return `Journeying since ${month} ${year}`;
 }
 
-const DB_TIMEOUT_MS = 8000;
-
 type ProfileData = [
-  { first_name: string; created_at: string | null } | null,
+  { first_name: string; created_at: string | null; starting_lesson?: string | null } | null,
   string[],
   { current: number; longest: number },
   number,
 ];
 
 export default async function ProfilePage() {
-  const supabase = await createServerSupabaseClient();
-  const { data } = await withTimeout(
-    supabase.auth.getSession(),
-    5000,
-    "Session check timed out"
-  ).catch(() => ({ data: { session: null } }));
-
-  const userId = data?.session?.user?.id;
+  const userId = await getServerUserId();
   if (!userId) {
     redirect("/login");
   }
 
-  const [profile, completedLessonIds, streak, xp]: ProfileData =
-    await withTimeout(
-      Promise.all([
-        getProfileServer(userId),
-        getUserProgressServer(userId),
-        getStreakServer(userId),
-        getTotalXPServer(userId),
-      ]),
-      DB_TIMEOUT_MS,
-      "Loading your profile timed out"
-    ).catch(
-      (): ProfileData => [
-        { first_name: "", created_at: null },
-        [],
-        { current: 0, longest: 0 },
-        0,
-      ]
-    );
+  let profile: ProfileData[0];
+  let completedLessonIds: string[];
+  let streak: ProfileData[2];
+  let xp: number;
+
+  try {
+    const [profileRes, lessonProgress, streakRes] = await Promise.all([
+      getProfileServer(userId),
+      getLessonProgressDataServer(userId),
+      getStreakServer(userId),
+    ]);
+    profile = profileRes;
+    completedLessonIds = lessonProgress.completedLessonIds;
+    streak = streakRes;
+    xp = lessonProgress.totalXP;
+  } catch {
+    profile = { first_name: "", created_at: null, starting_lesson: null };
+    completedLessonIds = [];
+    streak = { current: 0, longest: 0 };
+    xp = 0;
+  }
 
   const tierProgress = buildTierProgress(completedLessonIds);
   const lessonsDone = completedLessonIds.length;
@@ -306,6 +306,62 @@ export default async function ProfilePage() {
             </p>
           </div>
         </section>
+
+        {/* DISABLED — level selection onboarding. Commented out for now, revisit later.
+        SECTION — YOUR STARTING POINT
+        <section
+          style={{
+            background: "white",
+            borderRadius: 20,
+            boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
+            padding: 24,
+            marginBottom: 24,
+          }}
+        >
+          <h2
+            style={{
+              fontFamily: "'Playfair Display', Georgia, serif",
+              fontSize: 20,
+              fontWeight: 700,
+              color: "#2C2016",
+              margin: "0 0 12px 0",
+            }}
+          >
+            Your starting point
+          </h2>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <span
+              style={{
+                fontFamily: "'Nunito', system-ui, sans-serif",
+                fontSize: 15,
+                color: "#2C2016",
+              }}
+            >
+              {profile?.starting_lesson
+                ? STARTING_LESSON_LABELS[profile.starting_lesson] ?? profile.starting_lesson
+                : "Beginner"}
+            </span>
+            <Link
+              href="/onboarding/level?from=profile"
+              style={{
+                fontFamily: "'Nunito', system-ui, sans-serif",
+                fontSize: 14,
+                color: "#C8932A",
+                fontWeight: 600,
+                textDecoration: "none",
+              }}
+            >
+              Update
+            </Link>
+          </div>
+        </section>
+        */}
 
         {/* SECTION 3 — TIER PROGRESS */}
         <section

@@ -6,6 +6,7 @@ export type IconName =
   | "streak"
   | "cross"
   | "lock"
+  | "unlock"
   | "check"
   | "star"
   | "arrow-right"
@@ -81,6 +82,16 @@ const ICONS: Record<IconName, (color: string) => ReactNode> = {
         strokeLinecap="round"
       />
     </>
+  ),
+  unlock: (color) => (
+    <circle
+      cx="12"
+      cy="12"
+      r="9"
+      fill="none"
+      stroke={color}
+      strokeWidth="2"
+    />
   ),
   check: (color) => (
     <path
