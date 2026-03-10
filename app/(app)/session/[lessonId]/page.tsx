@@ -25,7 +25,8 @@ interface Card {
   mechanic: string;
   prompt?: string;
   sentence?: string;
-  blanks?: { options: string[]; correct: string }[];
+  wordBank?: string[];
+  blanks?: { options?: string[]; correct: string }[];
   options?: string[];
   correct?: string | boolean | string[];
   statement?: string;
@@ -68,7 +69,8 @@ export default function SessionPage() {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
-  const [fillBlankValues, setFillBlankValues] = useState<string[]>([]);
+  /** For fill_blank: each slot holds the word bank index selected, or null if empty. Tracks by index so duplicate words work. */
+  const [fillBlankSlotToWordBankIndex, setFillBlankSlotToWordBankIndex] = useState<(number | null)[]>([]);
   const [sequenceValues, setSequenceValues] = useState<string[]>([]);
   const [prayerCelebrating, setPrayerCelebrating] = useState(false);
   const [completeMounted, setCompleteMounted] = useState(false);
@@ -150,7 +152,12 @@ export default function SessionPage() {
     let correct = false;
 
     if (card.mechanic === "fill_blank" && card.blanks) {
-      correct = card.blanks.every((b, i) => fillBlankValues[i] === b.correct);
+      const wordBank = card.wordBank ?? card.blanks.flatMap((b) => b.options ?? []);
+      correct = card.blanks.every(
+        (b, i) =>
+          fillBlankSlotToWordBankIndex[i] != null &&
+          wordBank[fillBlankSlotToWordBankIndex[i]!] === b.correct
+      );
     } else if (
       (card.mechanic === "multiple_choice" || card.mechanic === "tap_correct") &&
       typeof card.correct === "string"
@@ -191,7 +198,7 @@ export default function SessionPage() {
   }, [
     lesson,
     currentCard,
-    fillBlankValues,
+    fillBlankSlotToWordBankIndex,
     selectedAnswer,
     sequenceValues,
     userId,
@@ -202,7 +209,7 @@ export default function SessionPage() {
     setSelectedAnswer(null);
     setIsCorrect(null);
     setShowFeedback(false);
-    setFillBlankValues([]);
+    setFillBlankSlotToWordBankIndex([]);
     setSequenceValues([]);
 
     if (currentCard >= 4) {
@@ -243,32 +250,32 @@ export default function SessionPage() {
     [lesson, currentCard, userId]
   );
 
-  const handleFillBlankSelect = useCallback((word: string, numBlanks: number) => {
-    setFillBlankValues((prev) => {
-      let nextEmpty = prev.findIndex((v) => !v);
+  const handleFillBlankSelect = useCallback((wordBankIndex: number, numBlanks: number) => {
+    setFillBlankSlotToWordBankIndex((prev) => {
+      let nextEmpty = prev.findIndex((v) => v === null);
       if (nextEmpty === -1 && prev.length < numBlanks) {
         nextEmpty = prev.length;
       }
       if (nextEmpty >= 0) {
         const next = [...prev];
-        next[nextEmpty] = word;
+        next[nextEmpty] = wordBankIndex;
         return next;
       }
       return prev;
     });
   }, []);
 
-  const handleFillBlankRemove = useCallback((index: number) => {
-    setFillBlankValues((prev) => {
+  const handleFillBlankRemove = useCallback((blankIndex: number) => {
+    setFillBlankSlotToWordBankIndex((prev) => {
       const next = [...prev];
-      next[index] = "";
+      next[blankIndex] = null;
       return next;
     });
   }, []);
 
-  const handleSequenceSelect = useCallback((word: string) => {
+  const handleSequenceSelect = useCallback((word: string, maxSlots: number = 4) => {
     setSequenceValues((prev) => {
-      if (prev.length >= 4 || prev.includes(word)) return prev;
+      if (prev.length >= maxSlots || prev.includes(word)) return prev;
       return [...prev, word];
     });
   }, []);
@@ -589,17 +596,28 @@ export default function SessionPage() {
     const canCheckFillBlank =
       card.mechanic === "fill_blank" &&
       card.blanks &&
-      fillBlankValues.length === card.blanks.length &&
-      fillBlankValues.every(Boolean);
+      fillBlankSlotToWordBankIndex.length === card.blanks.length &&
+      fillBlankSlotToWordBankIndex.every((i) => i != null);
     const canCheckSequence =
-      card.mechanic === "sequence" && sequenceValues.length === 4;
+      card.mechanic === "sequence" &&
+      card.correct &&
+      Array.isArray(card.correct) &&
+      sequenceValues.length === card.correct.length;
     const canCheckMC =
       (card.mechanic === "multiple_choice" || card.mechanic === "tap_correct") &&
       selectedAnswer !== null;
 
     const wordBankFillBlank =
       card.mechanic === "fill_blank" && card.blanks
-        ? card.blanks.flatMap((b) => b.options).filter((o) => !fillBlankValues.includes(o))
+        ? (() => {
+            const wordBank = card.wordBank ?? card.blanks.flatMap((b) => b.options ?? []);
+            const usedIndices = new Set(
+              fillBlankSlotToWordBankIndex.filter((i): i is number => i != null)
+            );
+            return wordBank
+              .map((word, index) => ({ word, index }))
+              .filter(({ index }) => !usedIndices.has(index));
+          })()
         : [];
     const wordBankSequence =
       card.mechanic === "sequence" && card.words
@@ -753,31 +771,42 @@ export default function SessionPage() {
                         marginBottom: 16,
                       }}
                     >
-                      {card.sentence.split("[BLANK]").map((part, i) => (
-                        <span key={i}>
-                          {part}
-                          {i < card.blanks!.length && (
-                            <span
-                              onClick={() =>
-                                fillBlankValues[i] &&
-                                handleFillBlankRemove(i)
-                              }
-                              style={{
-                                display: "inline-block",
-                                minWidth: 80,
-                                borderBottom: "2px solid var(--color-gold)",
-                                margin: "0 4px",
-                                cursor: fillBlankValues[i] ? "pointer" : "default",
-                                color: fillBlankValues[i]
-                                  ? "#2C2016"
-                                  : "transparent",
-                              }}
-                            >
-                              {fillBlankValues[i] || " ___ "}
-                            </span>
-                          )}
-                        </span>
-                      ))}
+                      {(() => {
+                        const wordBank =
+                          card.wordBank ??
+                          card.blanks!.flatMap((b) => b.options ?? []);
+                        return card.sentence!.split("[BLANK]").map((part, i) => (
+                          <span key={i}>
+                            {part}
+                            {i < card.blanks!.length && (
+                              <span
+                                onClick={() =>
+                                  fillBlankSlotToWordBankIndex[i] != null &&
+                                  handleFillBlankRemove(i)
+                                }
+                                style={{
+                                  display: "inline-block",
+                                  minWidth: 80,
+                                  borderBottom: "2px solid var(--color-gold)",
+                                  margin: "0 4px",
+                                  cursor:
+                                    fillBlankSlotToWordBankIndex[i] != null
+                                      ? "pointer"
+                                      : "default",
+                                  color:
+                                    fillBlankSlotToWordBankIndex[i] != null
+                                      ? "#2C2016"
+                                      : "transparent",
+                                }}
+                              >
+                                {fillBlankSlotToWordBankIndex[i] != null
+                                  ? wordBank[fillBlankSlotToWordBankIndex[i]!]
+                                  : " ___ "}
+                              </span>
+                            )}
+                          </span>
+                        ));
+                      })()}
                     </p>
                     <div
                       style={{
@@ -787,11 +816,11 @@ export default function SessionPage() {
                         marginBottom: 16,
                       }}
                     >
-                      {wordBankFillBlank.map((w, wi) => (
+                      {wordBankFillBlank.map(({ word, index }) => (
                         <button
-                          key={`${w}-${wi}`}
+                          key={index}
                           onClick={() =>
-                            handleFillBlankSelect(w, card.blanks!.length)
+                            handleFillBlankSelect(index, card.blanks!.length)
                           }
                           style={{
                             padding: "8px 16px",
@@ -803,7 +832,7 @@ export default function SessionPage() {
                             cursor: "pointer",
                           }}
                         >
-                          {w}
+                          {word}
                         </button>
                       ))}
                     </div>
@@ -945,7 +974,10 @@ export default function SessionPage() {
                         flexWrap: "wrap",
                       }}
                     >
-                      {[0, 1, 2, 3].map((i) => (
+                      {Array.from(
+                        { length: card.words?.length ?? 4 },
+                        (_, i) => i
+                      ).map((i) => (
                         <div
                           key={i}
                           onClick={() =>
@@ -977,7 +1009,14 @@ export default function SessionPage() {
                       {wordBankSequence.map((w) => (
                         <button
                           key={w}
-                          onClick={() => handleSequenceSelect(w)}
+                          onClick={() =>
+                            handleSequenceSelect(
+                              w,
+                              card.correct && Array.isArray(card.correct)
+                                ? card.correct.length
+                                : 4
+                            )
+                          }
                           style={{
                             padding: "8px 16px",
                             borderRadius: 9999,
