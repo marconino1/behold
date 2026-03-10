@@ -23,11 +23,13 @@ export async function getUserProgressServer(
 ): Promise<string[]> {
   const supabase = await createServerSupabaseClient();
   const { data, error } = await withAbortTimeout((signal) =>
-    supabase
-      .from("lesson_progress")
-      .select("lesson_id, status")
-      .eq("user_id", userId)
-      .abortSignal(signal)
+    Promise.resolve(
+      supabase
+        .from("lesson_progress")
+        .select("lesson_id, status")
+        .eq("user_id", userId)
+        .abortSignal(signal)
+    )
   ).catch(() => ({ data: null, error: { message: "timeout" } })) as {
     data: Array<{ lesson_id: string; status?: string | null }>;
     error: any;
@@ -48,12 +50,14 @@ export async function getSkippedLessonIdsServer(
 ): Promise<string[]> {
   const supabase = await createServerSupabaseClient();
   const { data, error } = await withAbortTimeout((signal) =>
-    supabase
-      .from("lesson_progress")
-      .select("lesson_id")
-      .eq("user_id", userId)
-      .eq("status", "skipped")
-      .abortSignal(signal)
+    Promise.resolve(
+      supabase
+        .from("lesson_progress")
+        .select("lesson_id")
+        .eq("user_id", userId)
+        .eq("status", "skipped")
+        .abortSignal(signal)
+    )
   ).catch(() => ({ data: null, error: { message: "timeout" } })) as {
     data: Array<{ lesson_id: string }> | null;
     error: any;
@@ -71,11 +75,13 @@ export async function getLessonProgressDataServer(userId: string): Promise<{
 }> {
   const supabase = await createServerSupabaseClient();
   const { data, error } = await withAbortTimeout((signal) =>
-    supabase
-      .from("lesson_progress")
-      .select("lesson_id, status, xp_earned")
-      .eq("user_id", userId)
-      .abortSignal(signal)
+    Promise.resolve(
+      supabase
+        .from("lesson_progress")
+        .select("lesson_id, status, xp_earned")
+        .eq("user_id", userId)
+        .abortSignal(signal)
+    )
   ).catch(() => ({ data: null, error: { message: "timeout" } })) as {
     data: Array<{ lesson_id: string; status?: string | null; xp_earned?: number | null }>;
     error: any;
@@ -112,12 +118,14 @@ export async function getProfileServer(
 } | null> {
   const supabase = await createServerSupabaseClient();
   const { data, error } = await withAbortTimeout((signal) =>
-    supabase
-      .from("profiles")
-      .select("first_name, created_at, onboarding_complete, starting_lesson")
-      .eq("id", userId)
-      .maybeSingle()
-      .abortSignal(signal)
+    Promise.resolve(
+      supabase
+        .from("profiles")
+        .select("first_name, created_at, onboarding_complete, starting_lesson")
+        .eq("id", userId)
+        .abortSignal(signal)
+        .maybeSingle()
+    )
   ).catch(() => ({ data: null, error: { message: "timeout" } })) as {
     data: any;
     error: any;
@@ -137,12 +145,14 @@ export async function getStreakServer(
 ): Promise<{ current: number; longest: number }> {
   const supabase = await createServerSupabaseClient();
   const { data, error } = await withAbortTimeout((signal) =>
-    supabase
-      .from("streaks")
-      .select("current_streak, longest_streak")
-      .eq("user_id", userId)
-      .maybeSingle()
-      .abortSignal(signal)
+    Promise.resolve(
+      supabase
+        .from("streaks")
+        .select("current_streak, longest_streak")
+        .eq("user_id", userId)
+        .abortSignal(signal)
+        .maybeSingle()
+    )
   ).catch(() => ({ data: null, error: { message: "timeout" } })) as {
     data: any;
     error: any;
@@ -160,12 +170,14 @@ export async function getHeartsStatusServer(
 ): Promise<{ hearts: number; lastLostAt: string | null }> {
   const supabase = await createServerSupabaseClient();
   const { data, error } = await withAbortTimeout((signal) =>
-    supabase
-      .from("hearts_status")
-      .select("hearts, last_lost_at")
-      .eq("user_id", userId)
-      .maybeSingle()
-      .abortSignal(signal)
+    Promise.resolve(
+      supabase
+        .from("hearts_status")
+        .select("hearts, last_lost_at")
+        .eq("user_id", userId)
+        .abortSignal(signal)
+        .maybeSingle()
+    )
   ).catch(() => ({ data: null, error: { message: "timeout" } })) as {
     data: { hearts: number; last_lost_at: string | null } | null;
     error: any;
@@ -190,15 +202,17 @@ export async function completeOnboardingServer(
     startIdx <= 0 ? [] : LESSON_ORDER.slice(0, startIdx);
 
   const { error: profileError } = await withAbortTimeout((signal) =>
-    supabase
-      .from("profiles")
-      .update({
-        onboarding_complete: true,
-        starting_lesson: startingLesson,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", userId)
-      .abortSignal(signal)
+    Promise.resolve(
+      supabase
+        .from("profiles")
+        .update({
+          onboarding_complete: true,
+          starting_lesson: startingLesson,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", userId)
+        .abortSignal(signal)
+    )
   );
 
   if (profileError) {
@@ -207,11 +221,13 @@ export async function completeOnboardingServer(
   }
 
   const { data: existing, error: existingError } = await withAbortTimeout((signal) =>
-    supabase
-      .from("lesson_progress")
-      .select("lesson_id, status")
-      .eq("user_id", userId)
-      .abortSignal(signal)
+    Promise.resolve(
+      supabase
+        .from("lesson_progress")
+        .select("lesson_id, status")
+        .eq("user_id", userId)
+        .abortSignal(signal)
+    )
   );
 
   if (existingError) {
@@ -224,12 +240,14 @@ export async function completeOnboardingServer(
   );
 
   const { error: deleteError } = await withAbortTimeout((signal) =>
-    supabase
-      .from("lesson_progress")
-      .delete()
-      .eq("user_id", userId)
-      .eq("status", "skipped")
-      .abortSignal(signal)
+    Promise.resolve(
+      supabase
+        .from("lesson_progress")
+        .delete()
+        .eq("user_id", userId)
+        .eq("status", "skipped")
+        .abortSignal(signal)
+    )
   );
 
   if (deleteError) {
@@ -249,10 +267,12 @@ export async function completeOnboardingServer(
 
   if (rows.length > 0) {
     const { error: upsertError } = await withAbortTimeout((signal) =>
-      supabase
-        .from("lesson_progress")
-        .upsert(rows, { onConflict: "user_id,lesson_id" })
-        .abortSignal(signal)
+      Promise.resolve(
+        supabase
+          .from("lesson_progress")
+          .upsert(rows, { onConflict: "user_id,lesson_id" })
+          .abortSignal(signal)
+      )
     );
     if (upsertError) {
       console.error("[completeOnboardingServer] lesson_progress bulk upsert error:", upsertError);

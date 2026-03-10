@@ -372,9 +372,10 @@ export const LESSONS = {
         mechanic: "fill_blank",
         prompt: "Complete the foundational verse:",
         sentence: "God said: 'Let us make man in our [BLANK], after our [BLANK].'",
+        wordBank: ["image", "likeness", "form", "design", "will", "plan"],
         blanks: [
-          { options: ["image","likeness","form","design"], correct: "image" },
-          { options: ["likeness","image","will","plan"], correct: "likeness" },
+          { correct: "image" },
+          { correct: "likeness" },
         ],
         feedback: "The distinction between 'image' (tselem) and 'likeness' (demuth) has been debated since Origen. Irenaeus saw image as the rational nature (indelible) and likeness as the supernatural grace (losable by sin). Either way, both together describe something utterly unique in creation: a being who reflects God himself.",
       },
