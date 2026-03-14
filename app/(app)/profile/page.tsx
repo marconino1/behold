@@ -438,6 +438,60 @@ export default async function ProfilePage() {
         <section style={{ textAlign: "center" }}>
           <SignOutButton />
         </section>
+
+        {/* SECTION 5 — LEGAL */}
+        <section style={{ marginTop: 32 }}>
+          <p
+            style={{
+              fontFamily: "'Nunito', system-ui, sans-serif",
+              fontSize: 11,
+              fontWeight: 700,
+              color: "var(--color-text-light)",
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+              marginBottom: 8,
+            }}
+          >
+            LEGAL
+          </p>
+          <Link
+            href="/privacy?from=profile"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              minHeight: 44,
+              background: "var(--color-surface-warm)",
+              borderRadius: 12,
+              padding: "0 16px",
+              border: "1px solid var(--color-border)",
+              textDecoration: "none",
+            }}
+          >
+            <span
+              style={{
+                fontFamily: "'Nunito', system-ui, sans-serif",
+                fontWeight: 600,
+                color: "var(--color-text)",
+              }}
+            >
+              Privacy Policy
+            </span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="var(--color-text-muted)"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          </Link>
+        </section>
       </div>
     </div>
   );

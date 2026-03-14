@@ -13,7 +13,9 @@
   --color-sky-pale: #E0F2FE;
   --color-text: #2C2016;
   --color-muted: #8C7A62;
+  --color-text-muted: #8C7A62;
   --color-text-light: #9CA3AF;
+  --color-surface-warm: #FDF9F3;
   --color-bg: #FAF7F2;
   --color-stone: #F2EDE4;
   --color-surface: #FDF9F3;
@@ -88,3 +90,15 @@ h1, h2, h3 {
 .animate-pulse-ring { animation: pulse-ring-expand 2s ease-out infinite; }
 .animate-spin { animation: spin 0.8s linear infinite; }
 .btn-press { animation: btn-press 0.15s ease-out; }
+
+.link-gold {
+  color: var(--color-gold);
+  text-decoration: none;
+}
+.link-gold:hover {
+  text-decoration: underline;
+}
+
+.footer-link:hover {
+  color: var(--color-text);
+}

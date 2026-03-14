@@ -4,6 +4,7 @@ import Link from "next/link";
 import Leo from "@/components/mascot/Leo";
 import Icon from "@/components/icons/Icon";
 import WaitlistForm from "@/components/landing/WaitlistForm";
+import Footer from "@/components/landing/Footer";
 
 export default async function LandingPage() {
   const userId = await getServerUserId();
@@ -502,36 +503,7 @@ export default async function LandingPage() {
       </section>
 
       {/* SECTION 7 — FOOTER */}
-      <footer
-        style={{
-          padding: "24px 24px",
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: "space-between",
-          alignItems: "center",
-          gap: 12,
-          borderTop: "1px solid #E8DDD0",
-        }}
-      >
-        <span
-          style={{
-            fontFamily: "'Nunito', system-ui, sans-serif",
-            fontSize: 14,
-            color: "#8C7A62",
-          }}
-        >
-          Behold © 2025
-        </span>
-        <span
-          style={{
-            fontFamily: "'Nunito', system-ui, sans-serif",
-            fontSize: 14,
-            color: "#8C7A62",
-          }}
-        >
-          Built for the post-confirmation Catholic.
-        </span>
-      </footer>
+      <Footer />
     </div>
   );
 }

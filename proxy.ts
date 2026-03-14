@@ -48,7 +48,8 @@ export async function proxy(request: NextRequest) {
     const isPublicRoute =
       request.nextUrl.pathname === "/" ||
       request.nextUrl.pathname === "/login" ||
-      request.nextUrl.pathname === "/signup";
+      request.nextUrl.pathname === "/signup" ||
+      request.nextUrl.pathname === "/privacy";
 
     if (!user && !isPublicRoute) {
       const url = request.nextUrl.clone();
@@ -61,7 +62,8 @@ export async function proxy(request: NextRequest) {
     const isPublicRoute =
       request.nextUrl.pathname === "/" ||
       request.nextUrl.pathname === "/login" ||
-      request.nextUrl.pathname === "/signup";
+      request.nextUrl.pathname === "/signup" ||
+      request.nextUrl.pathname === "/privacy";
     if (!isPublicRoute) {
       const url = request.nextUrl.clone();
       url.pathname = "/login";

@@ -5,6 +5,7 @@ import HCaptcha from "@hcaptcha/react-hcaptcha";
 import Link from "next/link";
 import Leo from "@/components/mascot/Leo";
 import Button from "@/components/ui/Button";
+import Icon from "@/components/icons/Icon";
 import { createClient } from "@/lib/supabase/client";
 
 const GRADIENT =
@@ -170,6 +171,7 @@ export default function SignupForm() {
   return (
     <div
       style={{
+        position: "relative",
         minHeight: "100vh",
         background: GRADIENT,
         display: "flex",
@@ -179,6 +181,30 @@ export default function SignupForm() {
         padding: 24,
       }}
     >
+      <div
+        style={{
+          position: "absolute",
+          top: 24,
+          left: 24,
+        }}
+      >
+        <Link
+          href="/"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "10px 16px",
+            borderRadius: 9999,
+            background: "rgba(255,255,255,0.2)",
+            border: "1px solid rgba(255,255,255,0.3)",
+            color: "white",
+            textDecoration: "none",
+          }}
+        >
+          <Icon name="arrow-left" size={18} color="white" />
+        </Link>
+      </div>
       <div style={{ marginBottom: 24 }}>
         <Leo state="idle" size="session" />
       </div>
@@ -433,6 +459,30 @@ export default function SignupForm() {
           >
             Create account
           </Button>
+
+          <p
+            style={{
+              fontFamily: "'Nunito', system-ui, sans-serif",
+              fontSize: 12,
+              color: "var(--color-text-light)",
+              textAlign: "center",
+              marginTop: 12,
+              marginBottom: 0,
+            }}
+          >
+            By creating an account, you agree to our{" "}
+            <Link
+              href="/privacy?from=signup"
+              style={{
+                color: "var(--color-gold)",
+                textDecoration: "none",
+              }}
+              className="link-gold"
+            >
+              Privacy Policy
+            </Link>
+            .
+          </p>
         </form>
 
         <p
