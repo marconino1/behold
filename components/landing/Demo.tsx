@@ -69,6 +69,37 @@ export default function Demo() {
 
   return (
     <section style={{ maxWidth: 460, margin: "36px auto 0", padding: "0 16px" }}>
+      <div style={{ marginBottom: 24 }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 12,
+            whiteSpace: "nowrap",
+            fontFamily: "'Playfair Display', Georgia, serif",
+            fontSize: 24,
+            fontWeight: 800,
+            color: "#2C2016",
+          }}
+        >
+          <span style={{ color: "#C8932A", fontSize: 14 }}>✦</span>
+          <span>Think you know the answer?</span>
+          <span style={{ color: "#C8932A", fontSize: 14 }}>✦</span>
+        </div>
+        <p
+          style={{
+            fontFamily: "'Nunito', system-ui, sans-serif",
+            fontSize: 20,
+            fontWeight: 600,
+            color: "#8C7A62",
+            textAlign: "center",
+            margin: "4px 0 0 0",
+          }}
+        >
+          Try the Day 1 lesson from the app
+        </p>
+      </div>
       <div
         style={{
           background: GRADIENT,
@@ -606,19 +637,6 @@ export default function Demo() {
           )}
         </div>
       </div>
-      <p
-        style={{
-          textAlign: "center",
-          marginTop: 14,
-          fontSize: 12,
-          color: "var(--color-text-light)",
-          fontWeight: 600,
-          paddingBottom: 8,
-          fontFamily: "'Nunito', system-ui, sans-serif",
-        }}
-      >
-        Try it — this is a real lesson from the app
-      </p>
     </section>
   );
 }
