@@ -4,71 +4,50 @@ export default function Footer() {
   return (
     <footer
       style={{
-        padding: "24px 24px",
-        display: "flex",
-        flexWrap: "wrap",
-        justifyContent: "space-between",
-        alignItems: "center",
-        gap: 12,
+        textAlign: "center",
+        padding: "20px 24px",
         borderTop: "1px solid var(--color-border)",
       }}
     >
       <div
         style={{
           display: "flex",
-          alignItems: "center",
-          gap: 8,
-          flexWrap: "wrap",
+          justifyContent: "center",
+          gap: 6,
+          fontSize: 12,
+          color: "var(--color-text-light)",
+          fontFamily: "'Nunito', system-ui, sans-serif",
         }}
       >
-        <span
-          style={{
-            fontFamily: "'Nunito', system-ui, sans-serif",
-            fontSize: 14,
-            color: "var(--color-text-muted)",
-          }}
-        >
-          Behold © 2025
-        </span>
-        <span
-          style={{
-            fontFamily: "'Nunito', system-ui, sans-serif",
-            fontSize: 14,
-            color: "var(--color-text-muted)",
-          }}
-        >
-          ·
-        </span>
         <Link
-          href="/privacy?from=home"
+          href="/privacy"
           style={{
-            fontFamily: "'Nunito', system-ui, sans-serif",
-            fontSize: 14,
             color: "var(--color-text-muted)",
             textDecoration: "none",
           }}
-          className="footer-link"
         >
           Privacy Policy
         </Link>
-        <span
+        <span>·</span>
+        <Link
+          href="/terms"
           style={{
-            fontFamily: "'Nunito', system-ui, sans-serif",
-            fontSize: 14,
             color: "var(--color-text-muted)",
+            textDecoration: "none",
           }}
         >
-          ·
-        </span>
-        <span
-          style={{
-            fontFamily: "'Nunito', system-ui, sans-serif",
-            fontSize: 14,
-            color: "var(--color-text-muted)",
-          }}
-        >
-          Built for the post-confirmation Catholic.
-        </span>
+          Terms
+        </Link>
+      </div>
+      <div
+        style={{
+          fontSize: 11,
+          color: "var(--color-text-light)",
+          marginTop: 4,
+          fontFamily: "'Nunito', system-ui, sans-serif",
+        }}
+      >
+        © 2026 Behold
       </div>
     </footer>
   );

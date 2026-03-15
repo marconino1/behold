@@ -14,13 +14,16 @@
   --color-text: #2C2016;
   --color-muted: #8C7A62;
   --color-text-muted: #8C7A62;
-  --color-text-light: #9CA3AF;
+  --color-text-light: #B8A898;
   --color-surface-warm: #FDF9F3;
   --color-bg: #FAF7F2;
   --color-stone: #F2EDE4;
   --color-surface: #FDF9F3;
   --color-green: #5FAD6B;
   --color-border: #E8DDD0;
+  --color-border-warm: #D4C4A8;
+  --color-bg-warm: #F5EFE4;
+  --color-shadow: rgba(60,40,10,0.08);
   --shadow-warm: 0 2px 12px rgba(60,40,10,0.08), 0 1px 4px rgba(60,40,10,0.04);
   --shadow-warm-lg: 0 8px 32px rgba(60,40,10,0.12), 0 2px 8px rgba(60,40,10,0.06);
 }
@@ -101,4 +104,11 @@ h1, h2, h3 {
 
 .footer-link:hover {
   color: var(--color-text);
+}
+
+@media (max-width: 640px) {
+  .how-grid {
+    grid-template-columns: 1fr !important;
+    max-width: 320px !important;
+  }
 }
