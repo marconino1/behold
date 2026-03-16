@@ -103,9 +103,10 @@ const SECTIONS = [
     title: "Contact",
     body: (
       <>
-        Questions? Email us at:{" "}
-        <a href="mailto:privacy@behold.app" className="link-gold">
-          privacy@behold.app
+        Questions? Email us at:
+        <br />
+        <a href="mailto:hello@beholdcatholic.app" className="link-gold">
+          hello@beholdcatholic.app
         </a>
       </>
     ),
