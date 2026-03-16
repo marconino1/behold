@@ -575,7 +575,7 @@ export const LESSONS = {
       {
         id: 1,
         sectionTitle: "What sin actually is.",
-        teaching: "Sin is not primarily breaking a rule. It is a failure in love — a turning away from God (aversio a Deo) toward a lesser good (conversio ad creaturam). The classic definition from Aquinas: 'a word, deed, or desire contrary to the eternal law.' There are four conditions for mortal sin: (1) grave matter, (2) full knowledge, (3) deliberate consent. Without all three, a sin is venial — it wounds the relationship with God but does not sever it.",
+        teaching: "Sin is not primarily breaking a rule. It is a failure in love — a turning away from God (aversio a Deo) toward a lesser good (conversio ad creaturam). The classic definition from Aquinas: 'a word, deed, or desire contrary to the eternal law.' There are three conditions for mortal sin: (1) grave matter, (2) full knowledge, (3) deliberate consent. Without all three, a sin is venial — it wounds the relationship with God but does not sever it.",
         ccc: "CCC 1849–1861",
         mechanic: "tap_correct",
         prompt: "What are the three conditions required for a mortal sin?",
