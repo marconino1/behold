@@ -7,6 +7,7 @@ import Icon from "@/components/icons/Icon";
 import Leo from "@/components/mascot/Leo";
 import Button from "@/components/ui/Button";
 import { LESSONS } from "@/content/behold_lesson_content.js";
+import { isAdminEmail } from "@/lib/admin";
 import { createClient } from "@/lib/supabase/client";
 import { completeLesson, getHeartsStatus, loseHeart, logPrayer } from "@/lib/db";
 import { calculateCurrentHearts } from "@/lib/hearts";
@@ -73,6 +74,8 @@ export default function SessionPage() {
   const [sequenceValues, setSequenceValues] = useState<string[]>([]);
   const [prayerCelebrating, setPrayerCelebrating] = useState(false);
   const [completeMounted, setCompleteMounted] = useState(false);
+  const [teachingDismissed, setTeachingDismissed] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   type AnsweredCardState = {
     selectedAnswer: string | null;
@@ -88,9 +91,43 @@ export default function SessionPage() {
     createClient()
       .auth.getUser()
       .then(({ data: { user } }) => {
-        if (user) setUserId(user.id);
+        if (user) {
+          setUserId(user.id);
+          setIsAdmin(isAdminEmail(user.email));
+        }
       });
   }, []);
+
+  useEffect(() => {
+    const saved = localStorage.getItem(`behold_lesson_progress_${lessonId}`);
+    if (saved && lesson) {
+      try {
+        const data = JSON.parse(saved);
+        if (Date.now() - data.timestamp < 24 * 60 * 60 * 1000) {
+          const cardIdx = data.currentCard ?? 0;
+          setCurrentCard(cardIdx);
+          if (data.hearts !== undefined) setHearts(data.hearts);
+          if (data.xpEarned !== undefined) setXpEarned(data.xpEarned);
+          if (data.answeredCards) setAnsweredCardsState(data.answeredCards);
+          const wrong = new Set<number>();
+          Object.entries(data.answeredCards ?? {}).forEach(([k, v]) => {
+            const entry = v as { isCorrect?: boolean };
+            if (entry.isCorrect === false) wrong.add(parseInt(k, 10));
+          });
+          setWrongAnswers(wrong);
+          if (cardIdx >= lesson.cards.length) {
+            setScreen("complete");
+          } else {
+            setScreen("learn");
+          }
+          return;
+        }
+      } catch {
+        // ignore
+      }
+      localStorage.removeItem(`behold_lesson_progress_${lessonId}`);
+    }
+  }, [lessonId, lesson]);
 
   useEffect(() => {
     const saved = answeredCardsState[currentCard];
@@ -101,8 +138,10 @@ export default function SessionPage() {
       setShowFeedback(true);
       setFillBlankSelectedIndices(saved.fillBlankSelectedIndices ?? []);
       setSequenceValues(saved.sequenceValues ?? []);
+      setTeachingDismissed(true);
       return;
     }
+    setTeachingDismissed(false);
     const card = lesson?.cards[currentCard];
     if (card?.mechanic === "fill_blank" && card?.blanks) {
       const targetLen = card.blanks.length;
@@ -121,11 +160,11 @@ export default function SessionPage() {
     getHeartsStatus(userId)
       .then(({ hearts: h, lastLostAt }) => {
         const { currentHearts, nextRefillAt: next } = calculateCurrentHearts(h, lastLostAt);
-        setHearts(currentHearts);
-        setNextRefillAt(next);
+        setHearts(isAdmin ? 99 : currentHearts);
+        setNextRefillAt(isAdmin ? null : next);
       })
       .catch(() => {});
-  }, [userId]);
+  }, [userId, isAdmin]);
 
   useEffect(() => {
     if (!nextRefillAt) return;
@@ -153,6 +192,7 @@ export default function SessionPage() {
       const perfect = wrongAnswers.size === 0;
       completeLesson(userId, lessonId, xpEarned, hearts, perfect).catch(() => {});
       checkAndUpdateStreak(userId).catch(() => {});
+      localStorage.removeItem(`behold_lesson_progress_${lessonId}`);
     }
   }, [screen, userId, completeMounted, lessonId, xpEarned, hearts, wrongAnswers]);
 
@@ -210,18 +250,20 @@ export default function SessionPage() {
     if (correct) {
       setXpEarned((x) => x + 20);
     } else {
-      setHearts((h) => Math.max(0, h - 1));
-      if (userId) {
-        loseHeart(userId)
-          .then(({ hearts: newHearts, lastLostAt }) => {
-            setHearts(newHearts);
-            if (newHearts === 0 && lastLostAt) {
-              setNextRefillAt(
-                new Date(new Date(lastLostAt).getTime() + 5 * 60 * 60 * 1000)
-              );
-            }
-          })
-          .catch(() => {});
+      if (!isAdmin) {
+        setHearts((h) => Math.max(0, h - 1));
+        if (userId) {
+          loseHeart(userId)
+            .then(({ hearts: newHearts, lastLostAt }) => {
+              setHearts(newHearts);
+              if (newHearts === 0 && lastLostAt) {
+                setNextRefillAt(
+                  new Date(new Date(lastLostAt).getTime() + 5 * 60 * 60 * 1000)
+                );
+              }
+            })
+            .catch(() => {});
+        }
       }
       setWrongAnswers((s) => new Set(s).add(currentCard));
     }
@@ -232,9 +274,13 @@ export default function SessionPage() {
     selectedAnswer,
     sequenceValues,
     userId,
+    isAdmin,
   ]);
 
   const handleContinue = useCallback(() => {
+    if (!lesson) return;
+    const nextCard = currentCard + 1;
+
     if (cardAnswered) {
       setAnsweredCardsState((prev) => ({
         ...prev,
@@ -246,32 +292,61 @@ export default function SessionPage() {
         },
       }));
     }
+
+    localStorage.setItem(
+      `behold_lesson_progress_${lessonId}`,
+      JSON.stringify({
+        currentCard: nextCard,
+        hearts,
+        xpEarned,
+        answeredCards: {
+          ...answeredCardsState,
+          ...(cardAnswered
+            ? {
+                [currentCard]: {
+                  selectedAnswer,
+                  isCorrect,
+                  fillBlankSelectedIndices: [...fillBlankSelectedIndices],
+                  sequenceValues: [...sequenceValues],
+                },
+              }
+            : {}),
+        },
+        timestamp: Date.now(),
+      })
+    );
+
     setCardAnswered(false);
     setSelectedAnswer(null);
     setIsCorrect(null);
     setShowFeedback(false);
     setFillBlankSelectedIndices([]);
     setSequenceValues([]);
+    setTeachingDismissed(false);
 
-    if (currentCard >= 4) {
+    if (nextCard >= lesson.cards.length) {
       setScreen("complete");
     } else {
-      setCurrentCard((c) => c + 1);
+      setCurrentCard(nextCard);
     }
   }, [
+    lesson,
     currentCard,
     cardAnswered,
     selectedAnswer,
     isCorrect,
     fillBlankSelectedIndices,
     sequenceValues,
+    answeredCardsState,
+    hearts,
+    xpEarned,
+    lessonId,
   ]);
 
   const handleBack = useCallback(() => {
-    if (currentCard > 0) {
-      setCurrentCard((c) => c - 1);
-    }
-  }, [currentCard]);
+    if (cardAnswered) return;
+    setTeachingDismissed(false);
+  }, [cardAnswered]);
 
   const handleTrueFalse = useCallback(
     (value: boolean) => {
@@ -587,7 +662,7 @@ export default function SessionPage() {
     );
   }
 
-  if (screen === "learn" && hearts === 0) {
+  if (screen === "learn" && hearts === 0 && !isAdmin) {
     return (
       <div
         style={{
@@ -712,7 +787,7 @@ export default function SessionPage() {
             zIndex: 10,
           }}
         >
-          {currentCard > 0 && (
+          {teachingDismissed && !cardAnswered && (
             <button
               onClick={handleBack}
               style={{
@@ -721,7 +796,7 @@ export default function SessionPage() {
                 padding: 8,
                 cursor: "pointer",
               }}
-              aria-label="Previous card"
+              aria-label="Back to reading"
             >
               <Icon name="arrow-left" size={24} color="#2C2016" />
             </button>
@@ -786,50 +861,51 @@ export default function SessionPage() {
               border: "1px solid var(--color-border)",
             }}
           >
-            <p
-              style={{
-                fontFamily: "'Nunito', system-ui, sans-serif",
-                fontWeight: 700,
-                fontSize: 12,
-                color: "var(--color-gold)",
-                textTransform: "uppercase",
-                letterSpacing: "0.08em",
-                marginBottom: 12,
-              }}
-            >
-              {card.sectionTitle}
-            </p>
-            <p
-              style={{
-                fontFamily: "'Playfair Display', Georgia, serif",
-                fontSize: 18,
-                color: "#0C4A6E",
-                lineHeight: 1.7,
-                marginBottom: 8,
-              }}
-            >
-              {card.teaching}
-            </p>
-            <p
-              style={{
-                fontFamily: "'Nunito', system-ui, sans-serif",
-                fontSize: 12,
-                color: "#8C7A62",
-                marginBottom: 20,
-              }}
-            >
-              {card.ccc}
-            </p>
-            <div
-              style={{
-                height: 1,
-                background: "#E8DDD0",
-                marginBottom: 20,
-              }}
-            />
-
-            {!showFeedback ? (
+            {!teachingDismissed && !cardAnswered ? (
               <>
+                <p
+                  style={{
+                    fontFamily: "'Nunito', system-ui, sans-serif",
+                    fontWeight: 700,
+                    fontSize: 12,
+                    color: "var(--color-gold)",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.08em",
+                    marginBottom: 12,
+                  }}
+                >
+                  {card.sectionTitle}
+                </p>
+                <p
+                  style={{
+                    fontFamily: "'Playfair Display', Georgia, serif",
+                    fontSize: 18,
+                    color: "#0C4A6E",
+                    lineHeight: 1.7,
+                    marginBottom: 8,
+                  }}
+                >
+                  {card.teaching}
+                </p>
+                <p
+                  style={{
+                    fontFamily: "'Nunito', system-ui, sans-serif",
+                    fontSize: 12,
+                    color: "#8C7A62",
+                    marginBottom: 20,
+                  }}
+                >
+                  {card.ccc}
+                </p>
+                <div style={{ marginTop: 20 }}>
+                  <Button variant="primary" onClick={() => setTeachingDismissed(true)}>
+                    I&apos;m Ready
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <div className="animate-fade-in">
+            <>
                 {card.mechanic === "fill_blank" && card.sentence && card.blanks && (
                   <>
                     <p
@@ -850,31 +926,47 @@ export default function SessionPage() {
                         marginBottom: 16,
                       }}
                     >
-                      {card.sentence.split("[BLANK]").map((part, i) => (
-                        <span key={i}>
-                          {part}
-                          {i < card.blanks!.length && (
-                            <span
-                              onClick={() =>
-                                fillBlankValuesDerived[i] &&
-                                handleFillBlankRemove(i)
-                              }
-                              style={{
-                                display: "inline-block",
-                                minWidth: 80,
-                                borderBottom: "2px solid var(--color-gold)",
-                                margin: "0 4px",
-                                cursor: fillBlankValuesDerived[i] ? "pointer" : "default",
-                                color: fillBlankValuesDerived[i]
-                                  ? "#2C2016"
-                                  : "transparent",
-                              }}
-                            >
-                              {fillBlankValuesDerived[i] || " ___ "}
-                            </span>
-                          )}
-                        </span>
-                      ))}
+                      {card.sentence.split("[BLANK]").map((part, i) => {
+                        const correctVal = card.blanks![i]?.correct;
+                        const userVal = fillBlankValuesDerived[i];
+                        const blankCorrect =
+                          cardAnswered && userVal && correctVal === userVal;
+                        const blankWrong =
+                          cardAnswered && userVal && correctVal !== userVal;
+                        return (
+                          <span key={i}>
+                            {part}
+                            {i < card.blanks!.length && (
+                              <span
+                                onClick={() =>
+                                  !cardAnswered &&
+                                  fillBlankValuesDerived[i] &&
+                                  handleFillBlankRemove(i)
+                                }
+                                style={{
+                                  display: "inline-block",
+                                  minWidth: 80,
+                                  borderBottom:
+                                    cardAnswered
+                                      ? blankCorrect
+                                        ? "2px solid #5FAD6B"
+                                        : blankWrong
+                                          ? "2px solid #DC2626"
+                                          : "2px solid var(--color-gold)"
+                                      : "2px solid var(--color-gold)",
+                                  margin: "0 4px",
+                                  cursor: cardAnswered ? "default" : fillBlankValuesDerived[i] ? "pointer" : "default",
+                                  color: fillBlankValuesDerived[i]
+                                    ? "#2C2016"
+                                    : "transparent",
+                                }}
+                              >
+                                {fillBlankValuesDerived[i] || " ___ "}
+                              </span>
+                            )}
+                          </span>
+                        );
+                      })}
                     </p>
                     <div
                       style={{
@@ -886,22 +978,55 @@ export default function SessionPage() {
                     >
                       {wordBankFillBlankItems.map(({ word, index }) => {
                         const isUsed = fillBlankSelectedIndices.includes(index);
+                        const isCorrectWord =
+                          cardAnswered &&
+                          card.blanks?.some(
+                            (b, i) =>
+                              fillBlankSelectedIndices[i] === index &&
+                              b.correct === word
+                          );
+                        const isWrongWord =
+                          cardAnswered &&
+                          isUsed &&
+                          !card.blanks?.some(
+                            (b, i) =>
+                              fillBlankSelectedIndices[i] === index &&
+                              b.correct === word
+                          );
                         return (
                           <button
                             key={`${index}-${word}`}
                             onClick={() =>
-                              !isUsed && handleFillBlankSelect(index)
+                              !cardAnswered && !isUsed && handleFillBlankSelect(index)
                             }
-                            disabled={isUsed}
+                            disabled={isUsed || cardAnswered}
                             style={{
                               padding: "8px 16px",
                               borderRadius: 9999,
-                              border: "1.5px solid var(--color-border)",
-                              background: isUsed ? "#E5E7EB" : "white",
-                              color: isUsed ? "#9CA3AF" : "#2C2016",
+                              border:
+                                cardAnswered
+                                  ? isCorrectWord
+                                    ? "1.5px solid #5FAD6B"
+                                    : isWrongWord
+                                      ? "1.5px solid #DC2626"
+                                      : "1.5px solid var(--color-border)"
+                                  : "1.5px solid var(--color-border)",
+                              background:
+                                cardAnswered
+                                  ? isCorrectWord
+                                    ? "#DCFCE7"
+                                    : isWrongWord
+                                      ? "#FEE2E2"
+                                      : isUsed
+                                        ? "#E5E7EB"
+                                        : "white"
+                                  : isUsed
+                                    ? "#E5E7EB"
+                                    : "white",
+                              color: isUsed || cardAnswered ? "#9CA3AF" : "#2C2016",
                               fontFamily: "'Nunito', system-ui, sans-serif",
                               fontWeight: 600,
-                              cursor: isUsed ? "default" : "pointer",
+                              cursor: cardAnswered || isUsed ? "default" : "pointer",
                             }}
                           >
                             {word}
@@ -909,13 +1034,134 @@ export default function SessionPage() {
                         );
                       })}
                     </div>
-                    <Button
-                      variant="primary"
-                      onClick={handleCheckAnswer}
-                      disabled={!canCheckFillBlank}
-                    >
-                      Check Answer
-                    </Button>
+                    {cardAnswered &&
+                      !isCorrect &&
+                      card.blanks &&
+                      card.sentence && (
+                        <div
+                          style={{
+                            marginBottom: 16,
+                            padding: 12,
+                            background: "#F0FDF4",
+                            borderRadius: 8,
+                            border: "1px solid #BBF7D0",
+                          }}
+                        >
+                          <p
+                            style={{
+                              fontFamily: "'Nunito', system-ui, sans-serif",
+                              fontWeight: 700,
+                              fontSize: 12,
+                              color: "#166534",
+                              textTransform: "uppercase",
+                              letterSpacing: "0.05em",
+                              marginBottom: 8,
+                            }}
+                          >
+                            Correct answers:
+                          </p>
+                          <p
+                            style={{
+                              fontFamily: "'Playfair Display', Georgia, serif",
+                              fontSize: 16,
+                              lineHeight: 2,
+                              color: "#166534",
+                            }}
+                          >
+                            {card.sentence.split("[BLANK]").map((part, i) => (
+                              <span key={i}>
+                                {part}
+                                {i < card.blanks!.length && (
+                                  <span
+                                    style={{
+                                      display: "inline-block",
+                                      minWidth: 80,
+                                      borderBottom: "2px solid #5FAD6B",
+                                      margin: "0 4px",
+                                      color: "#166534",
+                                      fontWeight: 600,
+                                    }}
+                                  >
+                                    {card.blanks![i].correct}
+                                  </span>
+                                )}
+                              </span>
+                            ))}
+                          </p>
+                        </div>
+                      )}
+                    {cardAnswered ? (
+                      <>
+                        <div className="animate-fade-in">
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 8,
+                              marginBottom: 12,
+                            }}
+                          >
+                            <Leo
+                              state={isCorrect ? "celebrating" : "oops"}
+                              size="card"
+                            />
+                            {isCorrect ? (
+                              <span
+                                style={{
+                                  fontFamily: "'Nunito', system-ui, sans-serif",
+                                  fontWeight: 700,
+                                  color: "#5FAD6B",
+                                  fontSize: 16,
+                                }}
+                              >
+                                Correct!
+                              </span>
+                            ) : (
+                              <span
+                                style={{
+                                  fontFamily: "'Nunito', system-ui, sans-serif",
+                                  fontWeight: 700,
+                                  color: "#DC2626",
+                                  fontSize: 16,
+                                }}
+                              >
+                                Not quite.
+                              </span>
+                            )}
+                          </div>
+                          <p
+                            style={{
+                              fontFamily: "'Playfair Display', Georgia, serif",
+                              fontStyle: "italic",
+                              fontSize: 16,
+                              color: "#2C2016",
+                              lineHeight: 1.6,
+                              marginBottom: 16,
+                            }}
+                          >
+                            {card.feedback}
+                          </p>
+                        </div>
+                        <Button
+                          variant="primary"
+                          onClick={handleContinue}
+                          style={{
+                            background: isCorrect ? "#5FAD6B" : "#DC2626",
+                            opacity: isCorrect ? 1 : 0.8,
+                          }}
+                        >
+                          Continue
+                        </Button>
+                      </>
+                    ) : (
+                      <Button
+                        variant="primary"
+                        onClick={handleCheckAnswer}
+                        disabled={!canCheckFillBlank}
+                      >
+                        Check Answer
+                      </Button>
+                    )}
                   </>
                 )}
 
@@ -941,38 +1187,122 @@ export default function SessionPage() {
                           marginBottom: 16,
                         }}
                       >
-                        {card.options.map((opt) => (
-                          <button
-                            key={opt}
-                            onClick={() => setSelectedAnswer(opt)}
+                        {card.options.map((opt) => {
+                          const isSelected = selectedAnswer === opt;
+                          const isCorrectAnswer = opt === card.correct;
+                          let border = "1px solid var(--color-border)";
+                          let background = "white";
+                          if (cardAnswered) {
+                            if (isSelected) {
+                              border = isCorrect
+                                ? "2px solid #5FAD6B"
+                                : "2px solid #DC2626";
+                              background = isCorrect
+                                ? "#DCFCE7"
+                                : "#FEE2E2";
+                            } else if (!isCorrect && isCorrectAnswer) {
+                              border = "2px solid #5FAD6B";
+                              background = "#DCFCE7";
+                            } else {
+                              background = "#F3F4F6";
+                            }
+                          } else if (isSelected) {
+                            border = "2px solid var(--color-gold)";
+                            background = "var(--color-gold-pale)";
+                          }
+                          return (
+                            <button
+                              key={opt}
+                              onClick={() => !cardAnswered && setSelectedAnswer(opt)}
+                              disabled={cardAnswered}
+                              style={{
+                                padding: 16,
+                                borderRadius: 12,
+                                border,
+                                background,
+                                fontFamily: "'Nunito', system-ui, sans-serif",
+                                fontSize: 16,
+                                textAlign: "left",
+                                cursor: cardAnswered ? "default" : "pointer",
+                              }}
+                            >
+                              {opt}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      {cardAnswered ? (
+                        <>
+                          <div className="animate-fade-in">
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 8,
+                                marginBottom: 12,
+                              }}
+                            >
+                              <Leo
+                                state={isCorrect ? "celebrating" : "oops"}
+                                size="card"
+                              />
+                              {isCorrect ? (
+                                <span
+                                  style={{
+                                    fontFamily: "'Nunito', system-ui, sans-serif",
+                                    fontWeight: 700,
+                                    color: "#5FAD6B",
+                                    fontSize: 16,
+                                  }}
+                                >
+                                  Correct!
+                                </span>
+                              ) : (
+                                <span
+                                  style={{
+                                    fontFamily: "'Nunito', system-ui, sans-serif",
+                                    fontWeight: 700,
+                                    color: "#DC2626",
+                                    fontSize: 16,
+                                  }}
+                                >
+                                  Not quite.
+                                </span>
+                              )}
+                            </div>
+                            <p
+                              style={{
+                                fontFamily: "'Playfair Display', Georgia, serif",
+                                fontStyle: "italic",
+                                fontSize: 16,
+                                color: "#2C2016",
+                                lineHeight: 1.6,
+                                marginBottom: 16,
+                              }}
+                            >
+                              {card.feedback}
+                            </p>
+                          </div>
+                          <Button
+                            variant="primary"
+                            onClick={handleContinue}
                             style={{
-                              padding: 16,
-                              borderRadius: 12,
-                              border:
-                                selectedAnswer === opt
-                                  ? "2px solid var(--color-gold)"
-                                  : "1px solid var(--color-border)",
-                              background:
-                                selectedAnswer === opt
-                                  ? "var(--color-gold-pale)"
-                                  : "white",
-                              fontFamily: "'Nunito', system-ui, sans-serif",
-                              fontSize: 16,
-                              textAlign: "left",
-                              cursor: "pointer",
+                              background: isCorrect ? "#5FAD6B" : "#DC2626",
+                              opacity: isCorrect ? 1 : 0.8,
                             }}
                           >
-                            {opt}
-                          </button>
-                        ))}
-                      </div>
-                      <Button
-                        variant="primary"
-                        onClick={handleCheckAnswer}
-                        disabled={!canCheckMC}
-                      >
-                        Check Answer
-                      </Button>
+                            Continue
+                          </Button>
+                        </>
+                      ) : (
+                        <Button
+                          variant="primary"
+                          onClick={handleCheckAnswer}
+                          disabled={!canCheckMC}
+                        >
+                          Check Answer
+                        </Button>
+                      )}
                     </>
                   )}
 
@@ -1002,28 +1332,108 @@ export default function SessionPage() {
                     >
                       {card.statement}
                     </p>
-                    <div style={{ display: "flex", gap: 12 }}>
-                      <Button
-                        variant="primary"
-                        onClick={() => handleTrueFalse(true)}
-                        style={{
-                          background: "#5FAD6B",
-                          flex: 1,
-                        }}
-                      >
-                        TRUE
-                      </Button>
-                      <Button
-                        variant="primary"
-                        onClick={() => handleTrueFalse(false)}
-                        style={{
-                          background: "#DC2626",
-                          flex: 1,
-                        }}
-                      >
-                        FALSE
-                      </Button>
-                    </div>
+                    {!cardAnswered ? (
+                      <div style={{ display: "flex", gap: 12 }}>
+                        <Button
+                          variant="primary"
+                          onClick={() => handleTrueFalse(true)}
+                          style={{
+                            background: "#5FAD6B",
+                            flex: 1,
+                            border: "none",
+                          }}
+                        >
+                          TRUE
+                        </Button>
+                        <Button
+                          variant="primary"
+                          onClick={() => handleTrueFalse(false)}
+                          style={{
+                            background: "#DC2626",
+                            flex: 1,
+                            border: "none",
+                          }}
+                        >
+                          FALSE
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="animate-fade-in">
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 8,
+                            marginBottom: 12,
+                          }}
+                        >
+                          <Leo
+                            state={isCorrect ? "celebrating" : "oops"}
+                            size="card"
+                          />
+                          {isCorrect ? (
+                            <span
+                              style={{
+                                fontFamily: "'Nunito', system-ui, sans-serif",
+                                fontWeight: 700,
+                                color: "#5FAD6B",
+                                fontSize: 16,
+                              }}
+                            >
+                              Correct!
+                            </span>
+                          ) : (
+                            <span
+                              style={{
+                                fontFamily: "'Nunito', system-ui, sans-serif",
+                                fontWeight: 700,
+                                color: "#DC2626",
+                                fontSize: 16,
+                              }}
+                            >
+                              Not quite.
+                            </span>
+                          )}
+                        </div>
+                        {!isCorrect && (
+                          <p
+                            style={{
+                              fontFamily: "'Nunito', system-ui, sans-serif",
+                              fontSize: 14,
+                              color: "#64748B",
+                              marginBottom: 12,
+                            }}
+                          >
+                            Correct answer:{" "}
+                            <span style={{ fontWeight: 700, color: "#5FAD6B" }}>
+                              {card.correct === true ? "TRUE" : "FALSE"}
+                            </span>
+                          </p>
+                        )}
+                        <p
+                          style={{
+                            fontFamily: "'Playfair Display', Georgia, serif",
+                            fontStyle: "italic",
+                            fontSize: 16,
+                            color: "#2C2016",
+                            lineHeight: 1.6,
+                            marginBottom: 16,
+                          }}
+                        >
+                          {card.feedback}
+                        </p>
+                        <Button
+                          variant="primary"
+                          onClick={handleContinue}
+                          style={{
+                            background: isCorrect ? "#5FAD6B" : "#DC2626",
+                            opacity: isCorrect ? 1 : 0.8,
+                          }}
+                        >
+                          Continue
+                        </Button>
+                      </div>
+                    )}
                   </>
                 )}
 
@@ -1050,26 +1460,55 @@ export default function SessionPage() {
                       {Array.from(
                         { length: card.words?.length ?? 4 },
                         (_, i) => i
-                      ).map((i) => (
-                        <div
-                          key={i}
-                          onClick={() =>
-                            sequenceValues[i] && handleSequenceRemove(i)
-                          }
-                          style={{
-                            minWidth: 100,
-                            padding: 12,
-                            border: "2px dashed #D1D5DB",
-                            borderRadius: 8,
-                            fontFamily: "'Nunito', system-ui, sans-serif",
-                            fontSize: 14,
-                            cursor: sequenceValues[i] ? "pointer" : "default",
-                            color: sequenceValues[i] ? "#2C2016" : "#9CA3AF",
-                          }}
-                        >
-                          {sequenceValues[i] || `${i + 1}.`}
-                        </div>
-                      ))}
+                      ).map((i) => {
+                        const correctArr = card.correct as string[] | undefined;
+                        const slotCorrect =
+                          cardAnswered &&
+                          correctArr &&
+                          sequenceValues[i] === correctArr[i];
+                        const slotWrong =
+                          cardAnswered &&
+                          correctArr &&
+                          sequenceValues[i] &&
+                          sequenceValues[i] !== correctArr[i];
+                        return (
+                          <div
+                            key={i}
+                            onClick={() =>
+                              !cardAnswered &&
+                              sequenceValues[i] &&
+                              handleSequenceRemove(i)
+                            }
+                            style={{
+                              minWidth: 100,
+                              padding: 12,
+                              border:
+                                cardAnswered
+                                  ? slotCorrect
+                                    ? "2px solid #5FAD6B"
+                                    : slotWrong
+                                      ? "2px solid #DC2626"
+                                      : "2px dashed #D1D5DB"
+                                  : "2px dashed #D1D5DB",
+                              borderRadius: 8,
+                              background:
+                                cardAnswered
+                                  ? slotCorrect
+                                    ? "#DCFCE7"
+                                    : slotWrong
+                                      ? "#FEE2E2"
+                                      : undefined
+                                  : undefined,
+                              fontFamily: "'Nunito', system-ui, sans-serif",
+                              fontSize: 14,
+                              cursor: cardAnswered ? "default" : sequenceValues[i] ? "pointer" : "default",
+                              color: sequenceValues[i] ? "#2C2016" : "#9CA3AF",
+                            }}
+                          >
+                            {sequenceValues[i] || `${i + 1}.`}
+                          </div>
+                        );
+                      })}
                     </div>
                     <div
                       style={{
@@ -1083,6 +1522,7 @@ export default function SessionPage() {
                         <button
                           key={w}
                           onClick={() =>
+                            !cardAnswered &&
                             handleSequenceSelect(
                               w,
                               card.correct && Array.isArray(card.correct)
@@ -1090,197 +1530,150 @@ export default function SessionPage() {
                                 : 4
                             )
                           }
+                          disabled={cardAnswered}
                           style={{
                             padding: "8px 16px",
                             borderRadius: 9999,
                             border: "1.5px solid var(--color-border)",
-                            background: "white",
+                            background: cardAnswered ? "#F3F4F6" : "white",
                             fontFamily: "'Nunito', system-ui, sans-serif",
                             fontWeight: 600,
-                            cursor: "pointer",
+                            cursor: cardAnswered ? "default" : "pointer",
+                            color: cardAnswered ? "#9CA3AF" : "#2C2016",
                           }}
                         >
                           {w}
                         </button>
                       ))}
                     </div>
-                    <Button
-                      variant="primary"
-                      onClick={handleCheckAnswer}
-                      disabled={!canCheckSequence}
-                    >
-                      Check Answer
-                    </Button>
+                    {cardAnswered &&
+                      !isCorrect &&
+                      card.correct &&
+                      Array.isArray(card.correct) && (
+                        <div
+                          style={{
+                            marginBottom: 16,
+                            padding: 12,
+                            background: "#F0FDF4",
+                            borderRadius: 8,
+                            border: "1px solid #BBF7D0",
+                          }}
+                        >
+                          <p
+                            style={{
+                              fontFamily: "'Nunito', system-ui, sans-serif",
+                              fontWeight: 700,
+                              fontSize: 12,
+                              color: "#166534",
+                              textTransform: "uppercase",
+                              letterSpacing: "0.05em",
+                              marginBottom: 8,
+                            }}
+                          >
+                            Correct order:
+                          </p>
+                          <div
+                            style={{
+                              display: "flex",
+                              gap: 8,
+                              flexWrap: "wrap",
+                            }}
+                          >
+                            {(card.correct as string[]).map((word, i) => (
+                              <div
+                                key={`${word}-${i}`}
+                                style={{
+                                  padding: "10px 14px",
+                                  border: "2px solid #5FAD6B",
+                                  borderRadius: 8,
+                                  background: "#DCFCE7",
+                                  fontFamily: "'Nunito', system-ui, sans-serif",
+                                  fontSize: 14,
+                                  fontWeight: 600,
+                                  color: "#166534",
+                                }}
+                              >
+                                {word}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    {cardAnswered ? (
+                      <>
+                        <div className="animate-fade-in">
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 8,
+                              marginBottom: 12,
+                            }}
+                          >
+                            <Leo
+                              state={isCorrect ? "celebrating" : "oops"}
+                              size="card"
+                            />
+                            {isCorrect ? (
+                              <span
+                                style={{
+                                  fontFamily: "'Nunito', system-ui, sans-serif",
+                                  fontWeight: 700,
+                                  color: "#5FAD6B",
+                                  fontSize: 16,
+                                }}
+                              >
+                                Correct!
+                              </span>
+                            ) : (
+                              <span
+                                style={{
+                                  fontFamily: "'Nunito', system-ui, sans-serif",
+                                  fontWeight: 700,
+                                  color: "#DC2626",
+                                  fontSize: 16,
+                                }}
+                              >
+                                Not quite.
+                              </span>
+                            )}
+                          </div>
+                          <p
+                            style={{
+                              fontFamily: "'Playfair Display', Georgia, serif",
+                              fontStyle: "italic",
+                              fontSize: 16,
+                              color: "#2C2016",
+                              lineHeight: 1.6,
+                              marginBottom: 16,
+                            }}
+                          >
+                            {card.feedback}
+                          </p>
+                        </div>
+                        <Button
+                          variant="primary"
+                          onClick={handleContinue}
+                          style={{
+                            background: isCorrect ? "#5FAD6B" : "#DC2626",
+                            opacity: isCorrect ? 1 : 0.8,
+                          }}
+                        >
+                          Continue
+                        </Button>
+                      </>
+                    ) : (
+                      <Button
+                        variant="primary"
+                        onClick={handleCheckAnswer}
+                        disabled={!canCheckSequence}
+                      >
+                        Check Answer
+                      </Button>
+                    )}
                   </>
                 )}
-              </>
-            ) : (
-              <div
-                style={{
-                  background: isCorrect ? "#DCFCE7" : "#FEE2E2",
-                  borderRadius: 12,
-                  padding: 20,
-                  marginTop: 8,
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 8,
-                    marginBottom: 12,
-                  }}
-                >
-                  <Leo
-                    state={isCorrect ? "celebrating" : "oops"}
-                    size="card"
-                  />
-                  {isCorrect ? (
-                    <>
-                      <Icon name="check" size={24} color="#5FAD6B" />
-                      <span
-                        style={{
-                          fontFamily: "'Nunito', system-ui, sans-serif",
-                          fontWeight: 700,
-                          color: "#5FAD6B",
-                          fontSize: 16,
-                        }}
-                      >
-                        Correct!
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <Icon name="x" size={24} color="#DC2626" />
-                      <span
-                        style={{
-                          fontFamily: "'Nunito', system-ui, sans-serif",
-                          fontWeight: 700,
-                          color: "#DC2626",
-                          fontSize: 16,
-                        }}
-                      >
-                        Not quite.
-                      </span>
-                    </>
-                  )}
-                </div>
-                {!isCorrect &&
-                  (card.mechanic === "multiple_choice" ||
-                    card.mechanic === "tap_correct") && (
-                    <p
-                      style={{
-                        fontFamily: "'Nunito', system-ui, sans-serif",
-                        fontSize: 14,
-                        color: "#991B1B",
-                        marginBottom: 8,
-                      }}
-                    >
-                      Correct: {String(card.correct)}
-                    </p>
-                )}
-                {!isCorrect &&
-                  card.mechanic === "true_false" && (
-                    <p
-                      style={{
-                        fontFamily: "'Nunito', system-ui, sans-serif",
-                        fontSize: 14,
-                        color: "#991B1B",
-                        marginBottom: 8,
-                      }}
-                    >
-                      Correct: {card.correct ? "True" : "False"}
-                    </p>
-                )}
-                {!isCorrect &&
-                  card.mechanic === "fill_blank" &&
-                  card.blanks && (
-                    <p
-                      style={{
-                        fontFamily: "'Nunito', system-ui, sans-serif",
-                        fontSize: 14,
-                        color: "#991B1B",
-                        marginBottom: 8,
-                      }}
-                    >
-                      Correct:{" "}
-                      {card.blanks.map((b) => b.correct).join(", ")}
-                    </p>
-                )}
-                {!isCorrect &&
-                  card.mechanic === "sequence" &&
-                  Array.isArray(card.correct) && (
-                    <p
-                      style={{
-                        fontFamily: "'Nunito', system-ui, sans-serif",
-                        fontSize: 14,
-                        color: "#991B1B",
-                        marginBottom: 8,
-                      }}
-                    >
-                      Correct order: {(card.correct as string[]).join(" → ")}
-                    </p>
-                )}
-                <p
-                  style={{
-                    fontFamily: "'Playfair Display', Georgia, serif",
-                    fontStyle: "italic",
-                    fontSize: 16,
-                    color: "#2C2016",
-                    lineHeight: 1.6,
-                    marginBottom: 16,
-                  }}
-                >
-                  {card.feedback}
-                </p>
-                {isCorrect && (
-                  <span
-                    style={{
-                      display: "inline-block",
-                      padding: "4px 12px",
-                      borderRadius: 9999,
-                      background: "var(--color-gold-pale)",
-                      color: "#92400E",
-                      fontFamily: "'Nunito', system-ui, sans-serif",
-                      fontWeight: 700,
-                      fontSize: 14,
-                      marginBottom: 16,
-                    }}
-                  >
-                    +20 XP
-                  </span>
-                )}
-                <div
-                  style={{
-                    borderTop: "1px solid var(--color-border)",
-                    marginTop: 12,
-                    paddingTop: 12,
-                  }}
-                >
-                  <p
-                    style={{
-                      fontFamily: "'Nunito', system-ui, sans-serif",
-                      fontSize: 11,
-                      color: "var(--color-text-light)",
-                      margin: 0,
-                      lineHeight: 1.5,
-                    }}
-                  >
-                    Behold aims to reflect authentic Catholic teaching. For questions of faith and doctrine, the Catechism of the Catholic Church remains the definitive reference.
-                  </p>
-                </div>
-                <div style={{ marginTop: 16 }}>
-                  <Button
-                    variant="primary"
-                    onClick={handleContinue}
-                    style={{
-                      background: isCorrect ? "#5FAD6B" : "#DC2626",
-                      opacity: isCorrect ? 1 : 0.8,
-                    }}
-                  >
-                    Continue
-                  </Button>
-                </div>
+            </>
               </div>
             )}
           </div>

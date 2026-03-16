@@ -30,11 +30,10 @@ export const getServerUserId = cache(async (): Promise<string | null> => {
   return data?.user?.id ?? null;
 });
 
-const ADMIN_EMAILS = ["marconino4@gmail.com"];
+import { isAdminEmail } from "@/lib/admin";
 
 export const isAdminUser = cache(async (): Promise<boolean> => {
   const supabase = await createServerSupabaseClient();
   const { data } = await supabase.auth.getUser();
-  const email = data?.user?.email?.toLowerCase();
-  return email != null && ADMIN_EMAILS.includes(email);
+  return isAdminEmail(data?.user?.email);
 });

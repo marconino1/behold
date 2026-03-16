@@ -55,6 +55,7 @@ export default async function DashboardPage() {
 
   const startingLesson = profile?.starting_lesson ?? "K0";
   const isAdmin = await isAdminUser();
+  const displayHearts = isAdmin ? 99 : currentHearts;
 
   return (
     <PathScreen
@@ -67,7 +68,7 @@ export default async function DashboardPage() {
       dayPlan={DAY_PLAN}
       sectionConfig={SECTION_CONFIG}
       isAdmin={isAdmin}
-      currentHearts={currentHearts}
+      currentHearts={displayHearts}
       nextRefillAt={nextRefillAt?.toISOString() ?? null}
     />
   );
