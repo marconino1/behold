@@ -564,8 +564,9 @@ export default function SessionPage() {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          padding: "28px 20px",
+          padding: "28px 24px",
           textAlign: "center",
+          boxSizing: "border-box",
         }}
       >
         <p
@@ -593,14 +594,15 @@ export default function SessionPage() {
         </h2>
         <div
           style={{
-            maxWidth: 340,
             width: "100%",
+            maxWidth: 280,
+            alignSelf: "center",
             margin: "0 auto 16px auto",
             background: "white",
             borderRadius: 16,
             padding: 16,
             boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
-            maxHeight: 280,
+            minHeight: 120,
             overflowY: "auto",
             textAlign: "center",
           }}
@@ -627,7 +629,7 @@ export default function SessionPage() {
             color: "rgba(255,255,255,0.7)",
             textAlign: "center",
             marginBottom: 20,
-            maxWidth: 300,
+            maxWidth: 280,
             margin: "0 auto 20px auto",
           }}
         >
