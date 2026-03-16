@@ -448,10 +448,10 @@ export default function SessionPage() {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          padding: "40px 24px",
+          padding: "28px 20px",
         }}
       >
-        <div style={{ marginBottom: 24 }}>
+        <div style={{ marginBottom: 20 }}>
           <Leo state="idle" size="session" />
         </div>
         <div
@@ -473,11 +473,11 @@ export default function SessionPage() {
         <h1
           style={{
             fontFamily: "'Playfair Display', Georgia, serif",
-            fontSize: 32,
+            fontSize: 28,
             fontWeight: 700,
             color: "white",
             textAlign: "center",
-            marginBottom: 8,
+            marginBottom: 6,
           }}
         >
           {lesson.title}
@@ -486,21 +486,21 @@ export default function SessionPage() {
           style={{
             fontFamily: "'Nunito', system-ui, sans-serif",
             fontStyle: "italic",
-            fontSize: 16,
+            fontSize: 15,
             color: "rgba(255,255,255,0.8)",
             textAlign: "center",
-            marginBottom: 24,
+            marginBottom: 20,
           }}
         >
           {lesson.subtitle}
         </p>
         <div
           style={{
-            maxWidth: 400,
+            maxWidth: 340,
             width: "100%",
             background: "white",
             borderRadius: 16,
-            padding: 24,
+            padding: 16,
             boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
             marginBottom: 24,
           }}
@@ -511,20 +511,20 @@ export default function SessionPage() {
               fontWeight: 700,
               fontSize: 14,
               color: "#2C2016",
-              marginBottom: 12,
+              marginBottom: 10,
             }}
           >
             Today you&apos;ll learn:
           </h3>
-          <ul style={{ margin: 0, paddingLeft: 20 }}>
+          <ul style={{ margin: 0, paddingLeft: 18 }}>
             {bulletTitles.map((t, i) => (
               <li
                 key={i}
                 style={{
                   fontFamily: "'Nunito', system-ui, sans-serif",
-                  fontSize: 15,
+                  fontSize: 14,
                   color: "#2C2016",
-                  marginBottom: 8,
+                  marginBottom: 6,
                   lineHeight: 1.5,
                 }}
               >
@@ -537,7 +537,7 @@ export default function SessionPage() {
               fontFamily: "'Nunito', system-ui, sans-serif",
               fontSize: 12,
               color: "#8C7A62",
-              marginTop: 16,
+              marginTop: 12,
               marginBottom: 0,
             }}
           >
@@ -564,18 +564,18 @@ export default function SessionPage() {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          padding: "40px 24px",
+          padding: "28px 20px",
           textAlign: "center",
         }}
       >
         <p
           style={{
             fontFamily: "'Nunito', system-ui, sans-serif",
-            fontSize: 12,
+            fontSize: 11,
             color: "#C8932A",
             fontWeight: 700,
             letterSpacing: "0.05em",
-            marginBottom: 8,
+            marginBottom: 6,
           }}
         >
           Daily Prayer
@@ -583,24 +583,24 @@ export default function SessionPage() {
         <h2
           style={{
             fontFamily: "'Playfair Display', Georgia, serif",
-            fontSize: 28,
+            fontSize: 24,
             fontWeight: 700,
             color: "white",
-            marginBottom: 24,
+            marginBottom: 16,
           }}
         >
           {prayer.title}
         </h2>
         <div
           style={{
-            maxWidth: 480,
+            maxWidth: 340,
             width: "100%",
             margin: "0 auto 16px auto",
             background: "white",
             borderRadius: 16,
-            padding: 24,
+            padding: 16,
             boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
-            maxHeight: 300,
+            maxHeight: 280,
             overflowY: "auto",
             textAlign: "center",
           }}
@@ -611,9 +611,9 @@ export default function SessionPage() {
               style={{
                 fontFamily: "'Playfair Display', Georgia, serif",
                 fontStyle: "italic",
-                fontSize: 18,
+                fontSize: 16,
                 color: "#0C4A6E",
-                marginBottom: 12,
+                marginBottom: 10,
               }}
             >
               {line}
@@ -623,12 +623,12 @@ export default function SessionPage() {
         <p
           style={{
             fontFamily: "'Nunito', system-ui, sans-serif",
-            fontSize: 13,
+            fontSize: 12,
             color: "rgba(255,255,255,0.7)",
             textAlign: "center",
-            marginBottom: 24,
-            maxWidth: 340,
-            margin: "0 auto 24px auto",
+            marginBottom: 20,
+            maxWidth: 300,
+            margin: "0 auto 20px auto",
           }}
         >
           {prayer.note}
@@ -1092,7 +1092,16 @@ export default function SessionPage() {
                       )}
                     {cardAnswered ? (
                       <>
-                        <div className="animate-fade-in">
+                        <div
+                          className="animate-fade-in"
+                          style={{
+                            background: isCorrect ? "#DCFCE7" : "#FEE2E2",
+                            borderRadius: 12,
+                            padding: 16,
+                            marginBottom: 16,
+                            border: `1px solid ${isCorrect ? "#BBF7D0" : "#FECACA"}`,
+                          }}
+                        >
                           <div
                             style={{
                               display: "flex",
@@ -1141,17 +1150,17 @@ export default function SessionPage() {
                           >
                             {card.feedback}
                           </p>
+                          <Button
+                            variant="primary"
+                            onClick={handleContinue}
+                            style={{
+                              background: isCorrect ? "#5FAD6B" : "#DC2626",
+                              opacity: isCorrect ? 1 : 0.8,
+                            }}
+                          >
+                            Continue
+                          </Button>
                         </div>
-                        <Button
-                          variant="primary"
-                          onClick={handleContinue}
-                          style={{
-                            background: isCorrect ? "#5FAD6B" : "#DC2626",
-                            opacity: isCorrect ? 1 : 0.8,
-                          }}
-                        >
-                          Continue
-                        </Button>
                       </>
                     ) : (
                       <Button
@@ -1233,7 +1242,16 @@ export default function SessionPage() {
                       </div>
                       {cardAnswered ? (
                         <>
-                          <div className="animate-fade-in">
+                          <div
+                            className="animate-fade-in"
+                            style={{
+                              background: isCorrect ? "#DCFCE7" : "#FEE2E2",
+                              borderRadius: 12,
+                              padding: 16,
+                              marginBottom: 16,
+                              border: `1px solid ${isCorrect ? "#BBF7D0" : "#FECACA"}`,
+                            }}
+                          >
                             <div
                               style={{
                                 display: "flex",
@@ -1282,17 +1300,17 @@ export default function SessionPage() {
                             >
                               {card.feedback}
                             </p>
+                            <Button
+                              variant="primary"
+                              onClick={handleContinue}
+                              style={{
+                                background: isCorrect ? "#5FAD6B" : "#DC2626",
+                                opacity: isCorrect ? 1 : 0.8,
+                              }}
+                            >
+                              Continue
+                            </Button>
                           </div>
-                          <Button
-                            variant="primary"
-                            onClick={handleContinue}
-                            style={{
-                              background: isCorrect ? "#5FAD6B" : "#DC2626",
-                              opacity: isCorrect ? 1 : 0.8,
-                            }}
-                          >
-                            Continue
-                          </Button>
                         </>
                       ) : (
                         <Button
@@ -1358,7 +1376,16 @@ export default function SessionPage() {
                         </Button>
                       </div>
                     ) : (
-                      <div className="animate-fade-in">
+                      <div
+                        className="animate-fade-in"
+                        style={{
+                          background: isCorrect ? "#DCFCE7" : "#FEE2E2",
+                          borderRadius: 12,
+                          padding: 16,
+                          marginBottom: 16,
+                          border: `1px solid ${isCorrect ? "#BBF7D0" : "#FECACA"}`,
+                        }}
+                      >
                         <div
                           style={{
                             display: "flex",
@@ -1601,7 +1628,16 @@ export default function SessionPage() {
                       )}
                     {cardAnswered ? (
                       <>
-                        <div className="animate-fade-in">
+                        <div
+                          className="animate-fade-in"
+                          style={{
+                            background: isCorrect ? "#DCFCE7" : "#FEE2E2",
+                            borderRadius: 12,
+                            padding: 16,
+                            marginBottom: 16,
+                            border: `1px solid ${isCorrect ? "#BBF7D0" : "#FECACA"}`,
+                          }}
+                        >
                           <div
                             style={{
                               display: "flex",
@@ -1650,17 +1686,17 @@ export default function SessionPage() {
                           >
                             {card.feedback}
                           </p>
+                          <Button
+                            variant="primary"
+                            onClick={handleContinue}
+                            style={{
+                              background: isCorrect ? "#5FAD6B" : "#DC2626",
+                              opacity: isCorrect ? 1 : 0.8,
+                            }}
+                          >
+                            Continue
+                          </Button>
                         </div>
-                        <Button
-                          variant="primary"
-                          onClick={handleContinue}
-                          style={{
-                            background: isCorrect ? "#5FAD6B" : "#DC2626",
-                            opacity: isCorrect ? 1 : 0.8,
-                          }}
-                        >
-                          Continue
-                        </Button>
                       </>
                     ) : (
                       <Button
