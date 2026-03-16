@@ -778,7 +778,7 @@ export const LESSONS = {
       {
         id: 1,
         sectionTitle: "God made everything out of nothing.",
-        teaching: "The Church's first claim about creation is the most radical one: God created the universe ex nihilo — out of nothing. He did not shape pre-existing matter like a craftsman working clay. He did not emanate the world from himself like a sun giving off light. There was no 'before' and no raw material. God spoke, and being itself came into existence. This is not a poetic statement. It is the most precise metaphysical claim in the Catechism.",
+        teaching: "The Church's first claim about creation is the most radical one: God created the universe ex nihilo — out of nothing. He did not shape pre-existing matter like a craftsman working clay. He did not emanate the world from himself like a sun giving off light. There was no 'before' and no raw material. God spoke, and 'being' itself came into existence. This is not a poetic statement. It is the most precise metaphysical claim in the Catechism.",
         ccc: "CCC 296–298",
         mechanic: "fill_blank",
         prompt: "Complete the Church's foundational teaching:",
