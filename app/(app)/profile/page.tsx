@@ -492,6 +492,23 @@ export default async function ProfilePage() {
             </svg>
           </Link>
         </section>
+
+        <p
+          style={{
+            fontSize: 13,
+            color: "#4B5563",
+            fontFamily: "'Nunito', system-ui, sans-serif",
+            fontStyle: "italic",
+            fontWeight: 500,
+            lineHeight: 1.5,
+            textAlign: "center",
+            marginTop: 32,
+            marginBottom: 16,
+            padding: "0 24px",
+          }}
+        >
+          Our app is not infallible. When in doubt, cross-check with the Catechism.
+        </p>
       </div>
     </div>
   );

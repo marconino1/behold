@@ -1819,6 +1819,20 @@ export default function SessionPage() {
           >
             Continue
           </Button>
+          <p
+            style={{
+              fontSize: 12,
+              color: "rgba(255,255,255,0.7)",
+              fontFamily: "'Nunito', system-ui, sans-serif",
+              fontWeight: 500,
+              textAlign: "center",
+              marginTop: 24,
+              marginBottom: 0,
+              padding: "0 16px",
+            }}
+          >
+            Our app is not infallible. When in doubt, cross-check with the Catechism.
+          </p>
         </div>
       </div>
     );
