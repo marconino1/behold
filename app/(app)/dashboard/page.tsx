@@ -4,7 +4,7 @@ import {
   getProfileServer,
   getStreakServer,
 } from "@/lib/db-server";
-import { getServerUserId } from "@/lib/supabase/server";
+import { getServerUserId, isAdminUser } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { DAY_PLAN, SECTION_CONFIG } from "@/content/behold_lesson_content.js";
 import { calculateCurrentHearts } from "@/lib/hearts";
@@ -54,6 +54,7 @@ export default async function DashboardPage() {
   );
 
   const startingLesson = profile?.starting_lesson ?? "K0";
+  const isAdmin = await isAdminUser();
 
   return (
     <PathScreen
@@ -65,6 +66,7 @@ export default async function DashboardPage() {
       startingLesson={startingLesson}
       dayPlan={DAY_PLAN}
       sectionConfig={SECTION_CONFIG}
+      isAdmin={isAdmin}
       currentHearts={currentHearts}
       nextRefillAt={nextRefillAt?.toISOString() ?? null}
     />

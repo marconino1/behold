@@ -29,3 +29,12 @@ export const getServerUserId = cache(async (): Promise<string | null> => {
   const { data } = await supabase.auth.getUser();
   return data?.user?.id ?? null;
 });
+
+const ADMIN_EMAILS = ["marconino4@gmail.com"];
+
+export const isAdminUser = cache(async (): Promise<boolean> => {
+  const supabase = await createServerSupabaseClient();
+  const { data } = await supabase.auth.getUser();
+  const email = data?.user?.email?.toLowerCase();
+  return email != null && ADMIN_EMAILS.includes(email);
+});

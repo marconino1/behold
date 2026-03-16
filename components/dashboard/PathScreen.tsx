@@ -36,6 +36,7 @@ interface PathScreenProps {
   startingLesson: string;
   dayPlan: DayPlanItem[];
   sectionConfig: SectionConfigItem[];
+  isAdmin?: boolean;
   currentHearts: number;
   nextRefillAt: string | null;
 }
@@ -61,11 +62,13 @@ function getNodeState(
   completedIds: string[],
   skippedIds: string[],
   activeLessonId: string | null,
-  noHearts: boolean
+  noHearts: boolean,
+  isAdmin?: boolean
 ): NodeState {
   if (completedIds.includes(lessonId)) return "complete";
   if (skippedIds.includes(lessonId)) return "skipped";
   if (activeLessonId === lessonId) return "active";
+  if (isAdmin) return "skipped";
   if (activeLessonId) {
     const lessonIdx = LESSON_ORDER.indexOf(lessonId);
     const activeIdx = LESSON_ORDER.indexOf(activeLessonId);
@@ -94,6 +97,7 @@ export default function PathScreen({
   startingLesson,
   dayPlan,
   sectionConfig,
+  isAdmin = false,
   currentHearts,
   nextRefillAt: nextRefillAtStr,
 }: PathScreenProps) {
@@ -316,7 +320,8 @@ export default function PathScreen({
                 completedLessonIds,
                 skippedLessonIds,
                 activeLessonId,
-                noHearts
+                noHearts,
+                isAdmin
               );
               const staggerX = getStaggerTranslate(index);
               const tier = getTierForLesson(lessonId);
