@@ -77,7 +77,7 @@ export const LESSONS = {
         mechanic: "fill_blank",
         prompt: "Complete the sentence:",
         sentence: "God loves you not because of what you've [BLANK], but because you [BLANK].",
-        wordBank: ["done","deserved","achieved","impressed him","exist","pray","try","hope"],
+        wordBank: ["done","deserved","impressed him","exist","pray","try","hope"],
         blanks: [
           { correct: "done" },
           { correct: "exist" },
