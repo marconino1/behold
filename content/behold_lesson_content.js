@@ -1393,156 +1393,1077 @@ export const LESSONS = {
   },
 
   // ═══════════════════════════════════════════════════════════════
-  // REMAINING LESSONS — structured outlines, status: "outline"
-  // All follow the same schema. Generate using behold_ai_generation_guide.md
+  // JESUS CHRIST — Foundation tier (C1–C5)
   // ═══════════════════════════════════════════════════════════════
 
   C1: {
-    id:"C1", title:"The Incarnation", subtitle:"Why God became man",
-    tier:"Encounter", tierColor:"#10B981", track:"C — Jesus Christ",
-    prereqs:["A2","B3"], ccc_primary:"CCC 456–483",
-    doctors:"Athanasius, De Incarnatione §§1–10; Leo the Great, Tome (Ep.28); Aquinas, ST III Q.1–6; Council of Chalcedon (451)",
-    totalXP:100, status:"outline",
-    key_teachings:[
-      "The hypostatic union: one Person, two natures — fully God, fully man",
-      "Chalcedon: 'without confusion, change, division, or separation'",
-      "Why the Incarnation was necessary: Athanasius's argument",
-      "The virgin birth: meaning and significance",
-      "The titles of Jesus: Christ, Lord, Son of God, Son of Man, Savior",
+    id: "C1",
+    title: "The Incarnation",
+    subtitle: "God became man — and why it had to be that way",
+    tier: "Foundation",
+    tierColor: "#2E6EA6",
+    track: "C — Jesus Christ",
+    prereqs: ["A2", "B3"],
+    ccc_primary: "CCC 456–483; 512–521",
+    doctors: "Athanasius, De Incarnatione; Leo the Great, Tome; Council of Chalcedon (451)",
+    totalXP: 100,
+    status: "complete",
+    cards: [
+      {
+        id: 1,
+        sectionTitle: "True God and true man",
+        teaching: "The Incarnation is the claim that the eternal Son of God — the Second Person of the Trinity — took on a complete human nature. He did not merely appear human. He did not inhabit a human body like a tenant. He became fully human while remaining fully divine. The Council of Chalcedon (451) defined this: two natures, divine and human, united in one Person 'without confusion, without change, without division, without separation.' (CCC 464–469)",
+        ccc: "CCC 464–469",
+        mechanic: "multiple_choice",
+        prompt: "The Council of Chalcedon defined that in Christ there are:",
+        options: [
+          "Two persons, one divine and one human",
+          "One nature that is a mixture of divine and human",
+          "Two natures, divine and human, united in one Person without confusion",
+          "A divine person who took on the appearance of a human body"
+        ],
+        correct: "Two natures, divine and human, united in one Person without confusion",
+        feedback: "Each wrong option is a historical heresy. Two persons = Nestorianism. One mixed nature = Monophysitism. Mere appearance = Docetism. Chalcedon's formula is precise because every imprecise alternative was tried and failed."
+      },
+      {
+        id: 2,
+        sectionTitle: "Why God became man",
+        teaching: "Why did God become man? The Catechism gives four reasons: to save us by reconciling us with God, so that we might know God's love, to be our model of holiness, and to make us 'partakers of the divine nature' (2 Peter 1:4). Athanasius summarized it radically: 'God became man so that man might become God' — not that we become divine in nature, but that we participate in divine life through grace. (CCC 456–460)",
+        ccc: "CCC 456–460",
+        mechanic: "true_false",
+        prompt: "True or false?",
+        statement: "The Incarnation was necessary only because humanity sinned — if Adam had not fallen, God would not have become man.",
+        correct: false,
+        feedback: "This is debated among theologians. The Franciscan tradition (Duns Scotus) holds that the Incarnation was always part of God's plan — not merely a response to sin but the culmination of creation. The Catechism lists four reasons, only one of which is redemption from sin."
+      },
+      {
+        id: 3,
+        sectionTitle: "Theotokos — Mother of God",
+        teaching: "Mary's role in the Incarnation is not decorative. The Council of Ephesus (431) defined her as Theotokos — 'God-bearer' or 'Mother of God.' This title is not primarily about Mary. It is a Christological claim: the child she bore was not merely human. If Mary is not the Mother of God, then the person she bore is not God — and the Incarnation collapses. (CCC 495; 509)",
+        ccc: "CCC 495; 509",
+        mechanic: "fill_blank",
+        prompt: "Complete the definition:",
+        sentence: "The Council of Ephesus defined Mary as [BLANK] — meaning '[BLANK] of God.'",
+        blanks: [
+          { options: ["Theotokos", "Christotokos", "Anthropotokos", "Mediatrix"], correct: "Theotokos" },
+          { options: ["Bearer", "Servant", "Vessel", "Image"], correct: "Bearer" }
+        ],
+        feedback: "Nestorius wanted to call Mary 'Christotokos' (bearer of Christ) to avoid saying God was born. Ephesus rejected this because it splits Christ into two persons. If the person born of Mary is one Person who is God, then Mary is rightly called God-bearer."
+      },
+      {
+        id: 4,
+        sectionTitle: "A truly human life",
+        teaching: "Jesus was born in poverty in Bethlehem, grew up in Nazareth as a carpenter's son, and was subject to his parents. He experienced hunger, fatigue, sorrow, and temptation. He wept at the death of Lazarus. He sweated blood in Gethsemane. None of this was pretend. The Son of God lived an authentically human life — which means human experience itself has been taken up into God. (CCC 512–534)",
+        ccc: "CCC 512–534",
+        mechanic: "multiple_choice",
+        prompt: "Why does it matter that Jesus experienced genuine human suffering and limitation?",
+        options: [
+          "It proves he was not really divine",
+          "It means human experience itself has been taken up into God",
+          "It shows that suffering is always God's punishment",
+          "It was necessary to trick the devil into thinking he was only human"
+        ],
+        correct: "It means human experience itself has been taken up into God",
+        feedback: "The Incarnation does not just save us from above — it transforms human experience from within. Every human suffering, limitation, and joy has been lived by God himself. This is why the Church can say suffering is redemptive, not merely endured."
+      },
+      {
+        id: 5,
+        sectionTitle: "The four Christological Councils",
+        teaching: "The Incarnation brings together claims that seem impossible: the infinite enters the finite, the eternal enters time, the Creator becomes a creature. The early Church spent four centuries and four major Councils (Nicaea, Constantinople, Ephesus, Chalcedon) defining this mystery. Each Council addressed a specific error. (CCC 464–469)",
+        ccc: "CCC 464–469",
+        mechanic: "sequence",
+        prompt: "Arrange the four Christological Councils in chronological order:",
+        words: ["Chalcedon (two natures, one Person)", "Ephesus (Mary is Theotokos)", "Nicaea (Son is consubstantial with Father)", "Constantinople (full divinity of the Holy Spirit)"],
+        correct: ["Nicaea (Son is consubstantial with Father)", "Constantinople (full divinity of the Holy Spirit)", "Ephesus (Mary is Theotokos)", "Chalcedon (two natures, one Person)"],
+        feedback: "325, 381, 431, 451 — each Council built on the last. Nicaea established the Son's full divinity. Constantinople affirmed the Spirit's. Ephesus protected the unity of Christ's person. Chalcedon defined how two natures coexist in one Person."
+      }
     ],
-    card_mechanics:["tap_correct","fill_blank","true_false","multiple_choice","sequence"],
+    prayer: {
+      title: "The Angelus",
+      text: [
+        "The Angel of the Lord declared unto Mary,",
+        "and she conceived of the Holy Spirit.",
+        "Hail Mary, full of grace...",
+        "Behold the handmaid of the Lord.",
+        "Be it done unto me according to thy word.",
+        "Hail Mary, full of grace...",
+        "And the Word was made flesh,",
+        "and dwelt among us.",
+        "Hail Mary, full of grace...",
+        "Pray for us, O holy Mother of God,",
+        "that we may be made worthy of the promises of Christ.",
+        "Amen."
+      ],
+      source: "Traditional Angelus prayer",
+      note: "The Angelus is the Incarnation prayed three times daily — morning, noon, and evening. Each verse moves through the mystery: annunciation, Mary's fiat, and the Word made flesh."
+    }
+  },
+
+  C2: {
+    id: "C2",
+    title: "Life & Ministry of Jesus",
+    subtitle: "What he taught, what he did, and why it matters",
+    tier: "Foundation",
+    tierColor: "#2E6EA6",
+    track: "C — Jesus Christ",
+    prereqs: ["C1"],
+    ccc_primary: "CCC 512–570",
+    doctors: "Augustine, Sermon on the Mount; Aquinas, ST III Q.35–45",
+    totalXP: 100,
+    status: "complete",
+    cards: [
+      {
+        id: 1,
+        sectionTitle: "Baptism and the Trinity revealed",
+        teaching: "Jesus' public ministry began with his baptism by John in the Jordan. The heavens opened, the Spirit descended like a dove, and the Father's voice declared: 'This is my beloved Son.' This is a Trinitarian revelation — all three Persons are present and active. Jesus' baptism does not cleanse him of sin (he has none) but inaugurates his mission and prefigures Christian baptism. (CCC 535–537)",
+        ccc: "CCC 535–537",
+        mechanic: "multiple_choice",
+        prompt: "At Jesus' baptism, all three Persons of the Trinity are revealed. The Father speaks, the Son is baptized, and:",
+        options: [
+          "An angel appears with a scroll",
+          "The Spirit descends like a dove",
+          "Moses and Elijah appear beside Jesus",
+          "The Temple curtain is torn"
+        ],
+        correct: "The Spirit descends like a dove",
+        feedback: "The baptism is the first public manifestation of the Trinity in Christ's ministry. It inaugurates everything that follows — the temptation, the teaching, the miracles, and ultimately the cross."
+      },
+      {
+        id: 2,
+        sectionTitle: "Miracles as signs",
+        teaching: "Jesus' miracles are not magic tricks designed to impress. Each miracle is a sign — it reveals something about who Jesus is and what the Kingdom of God looks like. Healing the sick shows the Kingdom restores wholeness. Feeding the multitude prefigures the Eucharist. Raising the dead anticipates the resurrection. The miracles are theology enacted in the physical world. (CCC 547–550)",
+        ccc: "CCC 547–550",
+        mechanic: "true_false",
+        prompt: "True or false?",
+        statement: "Jesus' miracles were primarily displays of power meant to prove he was God.",
+        correct: false,
+        feedback: "The miracles are signs of the Kingdom, not power displays. Jesus actually refused to perform miracles as mere proof (see the temptation narrative). Each miracle reveals the nature of God's reign: wholeness, abundance, life, mercy."
+      },
+      {
+        id: 3,
+        sectionTitle: "The Beatitudes",
+        teaching: "The Sermon on the Mount (Matthew 5–7) is Jesus' most sustained moral teaching. It begins with the Beatitudes — eight declarations that invert the world's values. 'Blessed are the poor in spirit, for theirs is the kingdom of heaven.' The Beatitudes are not rules to follow. They are descriptions of the character formed by grace — the portrait of what a person looks like when they are living in the Kingdom. (CCC 1716–1717)",
+        ccc: "CCC 1716–1717",
+        mechanic: "fill_blank",
+        prompt: "Complete the teaching:",
+        sentence: "The Beatitudes are not rules to follow — they are descriptions of the [BLANK] formed by [BLANK].",
+        blanks: [
+          { options: ["character", "behavior", "obedience", "reward"], correct: "character" },
+          { options: ["grace", "effort", "law", "discipline"], correct: "grace" }
+        ],
+        feedback: "The Beatitudes describe the kind of person God is making — not a moral checklist but a portrait. When Jesus says 'blessed are the merciful,' he is describing what a graced person naturally becomes, not issuing a command to be more merciful by willpower."
+      },
+      {
+        id: 4,
+        sectionTitle: "The Twelve Apostles",
+        teaching: "Jesus chose twelve apostles — not randomly, but as a deliberate sign. Israel had twelve tribes. Jesus reconstitutes Israel around himself. He gives the apostles authority to teach, govern, and sanctify. Peter is named 'rock' and given the keys of the kingdom. This is not a loose fellowship — it is the foundation of an institution that will outlast the Roman Empire. (CCC 551–553)",
+        ccc: "CCC 551–553",
+        mechanic: "multiple_choice",
+        prompt: "Why did Jesus choose exactly twelve apostles?",
+        options: [
+          "Twelve was considered a lucky number in Jewish culture",
+          "To mirror the twelve tribes and reconstitute Israel around himself",
+          "Because he needed twelve witnesses for Roman legal requirements",
+          "Each apostle represented one month of the year"
+        ],
+        correct: "To mirror the twelve tribes and reconstitute Israel around himself",
+        feedback: "The Twelve are not a committee. They are the patriarchs of the new Israel. Jesus explicitly links them to Israel's twelve tribes (Matthew 19:28). This act is the foundation of the Church's apostolic structure."
+      },
+      {
+        id: 5,
+        sectionTitle: "The shape of the ministry",
+        teaching: "Jesus' ministry follows a pattern visible across the Gospels: proclamation of the Kingdom, call to repentance and faith, teaching through parables and discourse, demonstration through miracles and signs, formation of the apostles, and the journey toward Jerusalem and the cross. Nothing in his ministry is accidental — each phase prepares for what follows. (CCC 541–556)",
+        ccc: "CCC 541–556",
+        mechanic: "sequence",
+        prompt: "Arrange these phases of Jesus' ministry in order:",
+        words: ["Journey toward Jerusalem and the cross", "Proclamation of the Kingdom", "Formation of the apostles", "Teaching through parables and miracles"],
+        correct: ["Proclamation of the Kingdom", "Teaching through parables and miracles", "Formation of the apostles", "Journey toward Jerusalem and the cross"],
+        feedback: "The pattern is: announce, demonstrate, form, sacrifice. Jesus first proclaims the Kingdom, then shows what it looks like, then prepares leaders to continue it, then gives his life to accomplish it."
+      }
+    ],
+    prayer: {
+      title: "Prayer of St. Francis",
+      text: [
+        "Lord, make me an instrument of your peace.",
+        "Where there is hatred, let me sow love;",
+        "where there is injury, pardon;",
+        "where there is doubt, faith;",
+        "where there is despair, hope;",
+        "where there is darkness, light;",
+        "where there is sadness, joy.",
+        "O Divine Master, grant that I may not so much seek",
+        "to be consoled as to console,",
+        "to be understood as to understand,",
+        "to be loved as to love.",
+        "For it is in giving that we receive,",
+        "it is in pardoning that we are pardoned,",
+        "and it is in dying that we are born to eternal life.",
+        "Amen."
+      ],
+      source: "Attributed to St. Francis of Assisi",
+      note: "This prayer embodies what Jesus' ministry taught: the Kingdom inverts the world's logic. Giving is receiving. Pardoning is being pardoned. Dying is living."
+    }
   },
 
   C3: {
-    id:"C3", title:"The Paschal Mystery", subtitle:"Why the cross is victory, not defeat",
-    tier:"Encounter", tierColor:"#10B981", track:"C — Jesus Christ",
-    prereqs:["C2"], ccc_primary:"CCC 571–658",
-    doctors:"Anselm, Cur Deus Homo; Leo the Great, Sermon 55; Aquinas, ST III Q.46–59",
-    totalXP:100, status:"outline",
-    key_teachings:[
-      "The four dimensions of Christ's passion: sacrifice, redemption, satisfaction, merit",
-      "Why Jesus had to die: Anselm's satisfaction theory and its limits",
-      "The resurrection: historical evidence and theological meaning",
-      "The descent into hell: what the Creed means",
-      "The resurrection appearances: their character and significance",
+    id: "C3",
+    title: "The Paschal Mystery",
+    subtitle: "His death is not a tragedy — it is the plan",
+    tier: "Foundation",
+    tierColor: "#2E6EA6",
+    track: "C — Jesus Christ",
+    prereqs: ["C2"],
+    ccc_primary: "CCC 571–623",
+    doctors: "Anselm, Cur Deus Homo; Leo the Great, Sermon 55; Aquinas, ST III Q.46–59",
+    totalXP: 100,
+    status: "complete",
+    cards: [
+      {
+        id: 1,
+        sectionTitle: "One saving event",
+        teaching: "The Paschal Mystery is the term for Christ's suffering, death, and resurrection taken as a single saving event. It is not three separate things that happened in sequence. The cross and the resurrection are two dimensions of one act of salvation. The word 'Paschal' comes from Pesach — Passover. Christ is the true Passover lamb whose blood delivers humanity from death. (CCC 571–573)",
+        ccc: "CCC 571–573",
+        mechanic: "multiple_choice",
+        prompt: "The term 'Paschal Mystery' refers to:",
+        options: [
+          "Jesus' birth in Bethlehem",
+          "The Last Supper and the institution of the Eucharist",
+          "Christ's suffering, death, and resurrection as one saving event",
+          "The descent of the Holy Spirit at Pentecost"
+        ],
+        correct: "Christ's suffering, death, and resurrection as one saving event",
+        feedback: "The Paschal Mystery is not just Good Friday. It is Good Friday and Easter Sunday understood as inseparable — two aspects of one divine act. Separating them produces either despair (death without resurrection) or cheap grace (resurrection without the cost of the cross)."
+      },
+      {
+        id: 2,
+        sectionTitle: "Not an accident",
+        teaching: "Jesus' death was not an accident, a tragedy, or a failure that God improvised around. It was the predetermined plan. Jesus himself said: 'No one takes my life from me. I lay it down of my own accord' (John 10:18). The cross is not where God's plan went wrong — it is where God's plan went deepest. Isaiah 53 described it seven centuries before it happened. (CCC 599–605)",
+        ccc: "CCC 599–605",
+        mechanic: "true_false",
+        prompt: "True or false?",
+        statement: "Jesus' crucifixion was an unexpected tragedy that God turned into something good after the fact.",
+        correct: false,
+        feedback: "Acts 2:23: Christ was 'delivered up according to the definite plan and foreknowledge of God.' The cross was not plan B. It was the definite plan from before creation."
+      },
+      {
+        id: 3,
+        sectionTitle: "What the cross accomplished",
+        teaching: "What did the cross accomplish? The Catholic tradition uses several complementary images: sacrifice (Christ offered himself as the perfect victim), redemption (he paid the ransom to free us from bondage), satisfaction (he made reparation for the offense of sin), and substitution (he bore what we deserved). No single image captures the full reality — together they illuminate different faces of one mystery. (CCC 613–617)",
+        ccc: "CCC 613–617",
+        mechanic: "fill_blank",
+        prompt: "Complete the teaching:",
+        sentence: "Christ's death is understood as [BLANK] (he offered himself), [BLANK] (he freed us from bondage), satisfaction, and substitution.",
+        blanks: [
+          { options: ["sacrifice", "punishment", "defeat", "example"], correct: "sacrifice" },
+          { options: ["redemption", "inspiration", "demonstration", "negotiation"], correct: "redemption" }
+        ],
+        feedback: "The Church resists reducing the cross to any single theory. Sacrifice emphasizes offering. Redemption emphasizes freedom. Satisfaction emphasizes justice. Substitution emphasizes love. Together they describe the inexhaustible meaning of Christ's death."
+      },
+      {
+        id: 4,
+        sectionTitle: "The Eucharist instituted",
+        teaching: "At the Last Supper, Jesus took bread and said 'This is my body, given for you' and took wine and said 'This is my blood of the new covenant.' He then commanded: 'Do this in remembrance of me.' In this act, Jesus instituted the Eucharist — making the sacrifice of the cross perpetually present in the life of the Church. The Mass is not a new sacrifice. It is the same sacrifice, made sacramentally present. (CCC 610–611; 1362–1367)",
+        ccc: "CCC 610–611; 1362–1367",
+        mechanic: "multiple_choice",
+        prompt: "The Eucharist, instituted at the Last Supper, makes present:",
+        options: [
+          "A symbolic reminder of Jesus' death",
+          "A new sacrifice offered each time Mass is celebrated",
+          "The same sacrifice of the cross, sacramentally present",
+          "A community meal of fellowship and thanksgiving"
+        ],
+        correct: "The same sacrifice of the cross, sacramentally present",
+        feedback: "The Mass does not repeat Calvary — there is one sacrifice, offered once for all. But the Eucharist makes that one sacrifice present across time so that every generation can participate in it."
+      },
+      {
+        id: 5,
+        sectionTitle: "The Paschal Triduum",
+        teaching: "The events of the Paschal Triduum — the three holiest days of the Christian year — follow a precise sequence. Holy Thursday: the Last Supper and institution of the Eucharist. Good Friday: the crucifixion and death. Holy Saturday: Christ descends to the dead. Easter Sunday: the resurrection. Each day is a distinct movement in the one Paschal Mystery. (CCC 617–625; 631–637)",
+        ccc: "CCC 617–625; 631–637",
+        mechanic: "sequence",
+        prompt: "Arrange the events of the Paschal Triduum in order:",
+        words: ["Easter Sunday: the resurrection", "Holy Thursday: the Last Supper", "Holy Saturday: descent to the dead", "Good Friday: the crucifixion"],
+        correct: ["Holy Thursday: the Last Supper", "Good Friday: the crucifixion", "Holy Saturday: descent to the dead", "Easter Sunday: the resurrection"],
+        feedback: "The Triduum is the heartbeat of the liturgical year. Every other feast and season orbits around these three days."
+      }
     ],
-    card_mechanics:["multiple_choice","fill_blank","sequence","tap_correct","true_false"],
+    prayer: {
+      title: "Stations of the Cross Prayer",
+      text: [
+        "We adore you, O Christ, and we bless you,",
+        "because by your holy cross",
+        "you have redeemed the world.",
+        "Lord Jesus, help me to walk with you",
+        "on the way of the cross.",
+        "Let me see in your suffering",
+        "the depth of your love.",
+        "And in your resurrection,",
+        "the power of your victory.",
+        "Amen."
+      ],
+      source: "Traditional Stations devotion",
+      note: "This prayer accompanies the Stations of the Cross — fourteen scenes from Jesus' passion, walked meditatively in every Catholic church. It is the Paschal Mystery prayed with the body."
+    }
   },
 
-  F3: {
-    id:"F3", title:"The Eucharist", subtitle:"Source and summit of all Catholic life",
-    tier:"Church", tierColor:"#3B82F6", track:"F — The Seven Sacraments",
-    prereqs:["F1","C3"], ccc_primary:"CCC 1322–1419",
-    doctors:"Cyril of Jerusalem, Mystagogical Catechesis 5; Aquinas, Adoro Te Devote; ST III Q.73–83; John Paul II, Ecclesia de Eucharistia",
-    totalXP:100, status:"outline",
-    key_teachings:[
-      "Real Presence: body, blood, soul, and divinity — not symbol",
-      "Transubstantiation: substance changes, accidents remain",
-      "The Mass as both sacrifice (representation of Calvary) and banquet",
-      "Eucharistic adoration and its basis",
-      "The Eucharist as source and summit of the Christian life (Lumen Gentium)",
+  C4: {
+    id: "C4",
+    title: "Resurrection & Ascension",
+    subtitle: "He is risen — and that changes everything",
+    tier: "Foundation",
+    tierColor: "#2E6EA6",
+    track: "C — Jesus Christ",
+    prereqs: ["C3"],
+    ccc_primary: "CCC 638–658; 659–667",
+    doctors: "Augustine, City of God XXII; Aquinas, ST III Q.53–59",
+    totalXP: 100,
+    status: "complete",
+    cards: [
+      {
+        id: 1,
+        sectionTitle: "A historical event",
+        teaching: "The resurrection is not a metaphor for the triumph of hope over despair. It is not a spiritual experience the disciples had after Jesus died. It is a historical event: the same Jesus who was crucified and buried was raised bodily from the dead on the third day. The tomb was empty. He appeared to individuals and groups over forty days. He ate fish. Thomas touched his wounds. Paul wrote: 'If Christ has not been raised, your faith is futile.' (CCC 639–644)",
+        ccc: "CCC 639–644",
+        mechanic: "true_false",
+        prompt: "True or false?",
+        statement: "The resurrection of Jesus can be understood as a powerful spiritual metaphor rather than a literal, bodily event.",
+        correct: false,
+        feedback: "The Church does not hedge here. The resurrection is either history or it is nothing. The disciples did not die for a metaphor. Paul staked everything on the claim that it actually happened — and said if it didn't, Christianity is a fraud."
+      },
+      {
+        id: 2,
+        sectionTitle: "The glorified body",
+        teaching: "The risen body of Jesus is real but transformed. He passes through locked doors, yet invites Thomas to touch his wounds. He appears and disappears, yet eats broiled fish. His body is the same body that was crucified — the wounds are still there — but it is now glorified, no longer subject to death. This is what the Church means by 'resurrection of the body' in the Creed: not resuscitation to the same mortal life, but transformation to a new kind of life. (CCC 645–646)",
+        ccc: "CCC 645–646",
+        mechanic: "multiple_choice",
+        prompt: "Jesus' risen body is best described as:",
+        options: [
+          "A completely new body that replaced the crucified one",
+          "The same body, fully healed and restored to normal life",
+          "The same body, but now glorified and transformed beyond mortality",
+          "A spiritual presence that appeared to have physical form"
+        ],
+        correct: "The same body, but now glorified and transformed beyond mortality",
+        feedback: "The continuity (same wounds, same person) and the transformation (passes through doors, no longer mortal) are both essential. Resurrection is not resuscitation — Lazarus was raised to die again. Christ was raised to a new mode of existence that death cannot touch."
+      },
+      {
+        id: 3,
+        sectionTitle: "The Ascension",
+        teaching: "The Ascension is not Jesus leaving. It is Jesus reigning. He does not go 'away' — he enters into the fullness of his authority over all creation. 'Seated at the right hand of the Father' is not a location — it is a claim about sovereignty. From this position he sends the Spirit, intercedes for us, and will come again to judge the living and the dead. (CCC 659–664)",
+        ccc: "CCC 659–664",
+        mechanic: "fill_blank",
+        prompt: "Complete the teaching:",
+        sentence: "'Seated at the right hand of the Father' is not a [BLANK] — it is a claim about [BLANK].",
+        blanks: [
+          { options: ["location", "metaphor", "prophecy", "reward"], correct: "location" },
+          { options: ["sovereignty", "distance", "departure", "absence"], correct: "sovereignty" }
+        ],
+        feedback: "The Ascension is the enthronement of Christ as Lord of all. He is not less present after the Ascension — he is present in a new way: through the Spirit, the Eucharist, the Church."
+      },
+      {
+        id: 4,
+        sectionTitle: "The Second Coming",
+        teaching: "The Creed says Christ 'will come again in glory to judge the living and the dead.' This is the doctrine of the Second Coming (Parousia). The Church does not know when it will happen — Jesus himself said 'no one knows the day or the hour.' But the Church lives in confident expectation that history is going somewhere. The story has an ending, and the ending is Christ. (CCC 668–677)",
+        ccc: "CCC 668–677",
+        mechanic: "multiple_choice",
+        prompt: "What does the Church teach about Christ's return?",
+        options: [
+          "It already happened spiritually at Pentecost",
+          "It will happen at a date that can be calculated from Scripture",
+          "The time is unknown, but the Church lives in confident expectation",
+          "It is a symbolic way of saying the Church will gradually improve the world"
+        ],
+        correct: "The time is unknown, but the Church lives in confident expectation",
+        feedback: "The Second Coming is not a code to be cracked or a timeline to be calculated. It is a promise that grounds Christian hope: the same Jesus who ascended will return, and when he does, he will bring to completion everything he began."
+      },
+      {
+        id: 5,
+        sectionTitle: "The post-resurrection sequence",
+        teaching: "The post-resurrection events follow a specific theological sequence: Christ rises, appears to witnesses over forty days to establish the reality of the resurrection, ascends to the Father to take his throne, and then sends the Holy Spirit at Pentecost to empower the Church. Each event depends on the one before it. (CCC 638–667; 731–732)",
+        ccc: "CCC 638–667; 731–732",
+        mechanic: "sequence",
+        prompt: "Arrange the post-resurrection events in order:",
+        words: ["Sends the Holy Spirit at Pentecost", "Rises from the dead", "Ascends to the Father", "Appears to witnesses over forty days"],
+        correct: ["Rises from the dead", "Appears to witnesses over forty days", "Ascends to the Father", "Sends the Holy Spirit at Pentecost"],
+        feedback: "The sequence matters: resurrection establishes the fact, the appearances confirm it to witnesses, the Ascension enthrones Christ, and Pentecost empowers the Church to carry the mission forward."
+      }
     ],
-    card_mechanics:["tap_correct","fill_blank","multiple_choice","true_false","sequence"],
+    prayer: {
+      title: "Regina Caeli",
+      text: [
+        "Queen of Heaven, rejoice, alleluia.",
+        "For he whom you did merit to bear, alleluia.",
+        "Has risen, as he said, alleluia.",
+        "Pray for us to God, alleluia.",
+        "Rejoice and be glad, O Virgin Mary, alleluia.",
+        "For the Lord has truly risen, alleluia.",
+        "Amen."
+      ],
+      source: "Traditional Regina Caeli (Queen of Heaven)",
+      note: "Prayed during the Easter season in place of the Angelus. It connects Mary's role in the Incarnation to Christ's resurrection — the child she bore has conquered death."
+    }
   },
 
-  G1: {
-    id:"G1", title:"The Ultimate End & Beatitude", subtitle:"What we were made for",
-    tier:"Moral Life", tierColor:"#EF4444", track:"G — Moral Theology",
-    prereqs:["A1","B2","C3"], ccc_primary:"CCC 1718–1724",
-    doctors:"Augustine, Confessions I.1; Aquinas, ST I-II Q.1–5",
-    totalXP:100, status:"outline",
-    key_teachings:[
-      "The beatific vision: seeing God face-to-face — not metaphor",
-      "Augustine: 'restless until it rests in you' — the structure of desire",
-      "Aquinas: all action ordered toward a final end",
-      "Why no created good can finally satisfy",
-      "The difference between happiness (imperfect) and beatitude (perfect)",
+  C5: {
+    id: "C5",
+    title: "The Holy Spirit & Pentecost",
+    subtitle: "The Church is born — the mission begins",
+    tier: "Foundation",
+    tierColor: "#2E6EA6",
+    track: "C — Jesus Christ",
+    prereqs: ["C4"],
+    ccc_primary: "CCC 683–747",
+    doctors: "Augustine, On the Trinity; Basil, On the Holy Spirit",
+    totalXP: 100,
+    status: "complete",
+    cards: [
+      {
+        id: 1,
+        sectionTitle: "A Person, not a force",
+        teaching: "The Holy Spirit is the Third Person of the Trinity — not a force, not an energy, not God's influence. He is a Person with intellect and will, co-equal and co-eternal with the Father and the Son. The Nicene Creed calls him 'the Lord, the giver of life, who proceeds from the Father and the Son, who with the Father and the Son is adored and glorified.' (CCC 685–686)",
+        ccc: "CCC 685–686",
+        mechanic: "multiple_choice",
+        prompt: "The Holy Spirit is:",
+        options: [
+          "God's impersonal power or energy at work in the world",
+          "A created being sent by the Father to help humanity",
+          "The Third Person of the Trinity, co-equal with Father and Son",
+          "A symbolic way of describing God's presence in the Church"
+        ],
+        correct: "The Third Person of the Trinity, co-equal with Father and Son",
+        feedback: "The Spirit is not 'less' God than the Father or the Son. Calling the Spirit an 'it' or a 'force' is the most common theological error in everyday Catholic speech."
+      },
+      {
+        id: 2,
+        sectionTitle: "Pentecost reverses Babel",
+        teaching: "Pentecost is not merely the birthday of the Church — it is the moment when the risen Christ fulfills his promise to send 'another Advocate' (John 14:16). The Spirit descended on the apostles as tongues of fire, and they began speaking in languages they had never learned. This reversal of Babel is deliberate: where sin scattered humanity into mutual incomprehension, the Spirit gathers humanity back into communion. (CCC 731–732; 1076)",
+        ccc: "CCC 731–732; 1076",
+        mechanic: "true_false",
+        prompt: "True or false?",
+        statement: "Pentecost reversed the scattering of Babel by gathering diverse peoples back into communion through the Spirit.",
+        correct: true,
+        feedback: "At Babel, one language was confused into many and humanity was scattered. At Pentecost, many languages were understood as one and humanity was gathered. The parallel is not accidental — Luke constructed his narrative to make it explicit."
+      },
+      {
+        id: 3,
+        sectionTitle: "The seven gifts",
+        teaching: "The Spirit works in the Church through seven gifts — wisdom, understanding, counsel, fortitude, knowledge, piety, and fear of the Lord — drawn from Isaiah 11:2. These are not natural talents. They are supernatural dispositions that make us responsive to the Spirit's guidance. They are given in Baptism and strengthened in Confirmation. (CCC 1830–1831)",
+        ccc: "CCC 1830–1831",
+        mechanic: "fill_blank",
+        prompt: "Complete the teaching:",
+        sentence: "The seven gifts of the Holy Spirit are supernatural [BLANK] that make us responsive to the Spirit's [BLANK].",
+        blanks: [
+          { options: ["dispositions", "talents", "emotions", "rewards"], correct: "dispositions" },
+          { options: ["guidance", "power", "approval", "comfort"], correct: "guidance" }
+        ],
+        feedback: "Gifts are not skills you develop. They are capacities God gives you for receiving his direction. Wisdom is not intelligence — it is the ability to see reality as God sees it. Fear of the Lord is not terror — it is awe before the infinite."
+      },
+      {
+        id: 4,
+        sectionTitle: "The Spirit in the Church",
+        teaching: "The Spirit's role in the Church is not limited to Pentecost. He is the source of all grace in the sacraments, the inspiration of Scripture, the guide of the Magisterium, the power behind every act of genuine holiness, and the bond of unity in the Body of Christ. Without the Spirit, the Church is an institution. With the Spirit, the Church is the living Body of Christ. (CCC 737–741)",
+        ccc: "CCC 737–741",
+        mechanic: "multiple_choice",
+        prompt: "Which of these is NOT a role of the Holy Spirit in the Church?",
+        options: [
+          "Source of grace in the sacraments",
+          "Inspiration of Sacred Scripture",
+          "Replacement of Christ's presence after the Ascension",
+          "Bond of unity in the Body of Christ"
+        ],
+        correct: "Replacement of Christ's presence after the Ascension",
+        feedback: "The Spirit does not replace Christ — he makes Christ present in a new way. The Spirit is the 'other Advocate' who continues Christ's work, not a substitute for a departed founder."
+      },
+      {
+        id: 5,
+        sectionTitle: "The Spirit across salvation history",
+        teaching: "The Spirit's work follows a pattern across salvation history: he hovered over the waters at creation, spoke through the prophets, overshadowed Mary at the Incarnation, descended on Jesus at his baptism, and was poured out on the Church at Pentecost. The same Spirit who was at work from the beginning is at work now. (CCC 702–716; 731)",
+        ccc: "CCC 702–716; 731",
+        mechanic: "sequence",
+        prompt: "Arrange the Spirit's activity in salvation history:",
+        words: ["Poured out at Pentecost", "Hovered over creation", "Overshadowed Mary at the Incarnation", "Spoke through the prophets"],
+        correct: ["Hovered over creation", "Spoke through the prophets", "Overshadowed Mary at the Incarnation", "Poured out at Pentecost"],
+        feedback: "The Spirit is not a late addition to the story. He has been active from the first verse of Genesis. Pentecost is not the Spirit's debut — it is the moment his work becomes visible, universal, and permanently constitutive of the Church."
+      }
     ],
-    card_mechanics:["multiple_choice","fill_blank","tap_correct","true_false","sequence"],
+    prayer: {
+      title: "Veni Creator Spiritus",
+      text: [
+        "Come, Holy Spirit, Creator blest,",
+        "and in our souls take up thy rest;",
+        "come with thy grace and heavenly aid",
+        "to fill the hearts which thou hast made.",
+        "O Comforter, to thee we cry,",
+        "thou heavenly gift of God most high,",
+        "thou fount of life and fire of love,",
+        "and sweet anointing from above.",
+        "Amen."
+      ],
+      source: "Veni Creator Spiritus, attr. Rabanus Maurus (9th c.)",
+      note: "Traditionally prayed before studying theology, at ordinations, and at papal conclaves. If you are going to invoke the Spirit, this is the prayer the Church has used for over a thousand years."
+    }
   },
 
-  H1: {
-    id:"H1", title:"What Is Prayer?", subtitle:"Before technique, relationship",
-    tier:"Depth — Prayer", tierColor:"#0EA5E9", track:"H — Prayer & the Interior Life",
-    prereqs:["A1"], ccc_primary:"CCC 2558–2649",
-    doctors:"Augustine, Confessions; Cassian, Conferences IX–X; John of the Cross, Sayings of Light",
-    totalXP:100, status:"outline",
-    key_teachings:[
-      "Prayer as covenant, not technique",
-      "The source of prayer: CCC defines it as 'the living water' of thirst for God",
-      "Types of prayer in the Catholic tradition",
-      "The universal call to prayer and the specific forms",
-      "Common obstacles: distraction, dryness, discouragement — and remedies",
+  // ═══════════════════════════════════════════════════════════════
+  // THE CHURCH & THE SACRAMENTS — Foundation tier (E1, F0, F1, M0, L0)
+  // ═══════════════════════════════════════════════════════════════
+
+  E1: {
+    id: "E1",
+    title: "What Is the Church?",
+    subtitle: "One, Holy, Catholic, Apostolic",
+    tier: "Foundation",
+    tierColor: "#2E6EA6",
+    track: "E — The Church",
+    prereqs: ["C5"],
+    ccc_primary: "CCC 748–870",
+    doctors: "Cyprian, On the Unity of the Church; Vatican II, Lumen Gentium",
+    totalXP: 100,
+    status: "complete",
+    cards: [
+      {
+        id: 1,
+        sectionTitle: "Body of Christ",
+        teaching: "The Church is not merely a human organization. It is the Body of Christ — the continuation of his presence in the world. Paul's metaphor is precise: just as a body has many parts but is one organism, so the baptized are many but constitute one Body with Christ as the head. The Church is simultaneously a visible institution and a mystical reality animated by the Holy Spirit. (CCC 787–795)",
+        ccc: "CCC 787–795",
+        mechanic: "multiple_choice",
+        prompt: "According to Catholic teaching, the Church is:",
+        options: [
+          "A voluntary association of people who share beliefs about Jesus",
+          "The Body of Christ — both a visible institution and a mystical reality",
+          "A purely spiritual reality with no need for institutional structure",
+          "A human organization that represents God's interests on earth"
+        ],
+        correct: "The Body of Christ — both a visible institution and a mystical reality",
+        feedback: "Reducing the Church to either dimension alone is an error. Without the visible institution, the Church dissolves into private opinion. Without the mystical reality, the Church becomes mere bureaucracy."
+      },
+      {
+        id: 2,
+        sectionTitle: "The four marks",
+        teaching: "The Creed describes the Church with four marks: one (unified in faith, sacraments, and governance), holy (set apart by God and animated by the Spirit), catholic (universal — for all peoples in all times), and apostolic (founded on the apostles and continuing their teaching through apostolic succession). These are not aspirations. They are claims about what the Church already is by God's design. (CCC 811–870)",
+        ccc: "CCC 811–870",
+        mechanic: "fill_blank",
+        prompt: "Complete the four marks:",
+        sentence: "The four marks of the Church are: one, [BLANK], catholic, and [BLANK].",
+        blanks: [
+          { options: ["holy", "perfect", "pure", "sacred"], correct: "holy" },
+          { options: ["apostolic", "evangelical", "universal", "divine"], correct: "apostolic" }
+        ],
+        feedback: "Holy does not mean sinless — it means set apart by God and sustained by his grace. Apostolic does not mean old-fashioned — it means the Church's authority traces in unbroken succession to the apostles whom Christ commissioned."
+      },
+      {
+        id: 3,
+        sectionTitle: "Apostolic succession",
+        teaching: "Apostolic succession means that every Catholic bishop can trace his ordination in an unbroken chain back to the apostles themselves. This is not a metaphor. It is a historical claim with documentary evidence. The bishop of Rome (the Pope) succeeds Peter, to whom Christ said: 'You are Peter, and on this rock I will build my Church' (Matthew 16:18). (CCC 857–862)",
+        ccc: "CCC 857–862",
+        mechanic: "true_false",
+        prompt: "True or false?",
+        statement: "Apostolic succession is a symbolic way of saying the Church honors the apostles' memory.",
+        correct: false,
+        feedback: "Apostolic succession is a historical and sacramental reality, not a metaphor. Every bishop is ordained by bishops who were ordained by bishops, in an unbroken chain to the apostles. This is what gives the Magisterium its authority."
+      },
+      {
+        id: 4,
+        sectionTitle: "Papal infallibility",
+        teaching: "The Pope has a unique role: he is the successor of Peter and the visible head of the Church on earth. The doctrine of papal infallibility (defined at Vatican I, 1870) does not mean the Pope cannot sin or make mistakes. It means that when the Pope speaks ex cathedra — formally defining a doctrine of faith or morals for the whole Church — he is preserved from error by the Holy Spirit. This has been invoked explicitly only twice. (CCC 889–892)",
+        ccc: "CCC 889–892",
+        mechanic: "multiple_choice",
+        prompt: "Papal infallibility means:",
+        options: [
+          "The Pope never sins or makes mistakes",
+          "Everything the Pope says is guaranteed to be true",
+          "When formally defining doctrine for the whole Church, the Pope is preserved from error",
+          "The Pope can change any Church teaching at will"
+        ],
+        correct: "When formally defining doctrine for the whole Church, the Pope is preserved from error",
+        feedback: "Infallibility is far more limited than people assume. It applies only to formal, solemn definitions of faith or morals. It has been explicitly invoked twice: the Immaculate Conception (1854) and the Assumption of Mary (1950)."
+      },
+      {
+        id: 5,
+        sectionTitle: "The hierarchy",
+        teaching: "The Church has a specific hierarchical structure established by Christ. The Pope leads the universal Church. Bishops govern individual dioceses and are successors of the apostles. Priests serve parishes under their bishop's authority. Deacons serve in ministry of charity, word, and liturgy. The laity are called to sanctify the world through their daily lives. (CCC 871–887)",
+        ccc: "CCC 871–887",
+        mechanic: "sequence",
+        prompt: "Arrange the Church's hierarchy from universal to local:",
+        words: ["Priests (serve parishes)", "Pope (Bishop of Rome)", "Laity (sanctify the world)", "Bishops (govern dioceses)"],
+        correct: ["Pope (Bishop of Rome)", "Bishops (govern dioceses)", "Priests (serve parishes)", "Laity (sanctify the world)"],
+        feedback: "This is not a ranking of holiness — a layperson can be holier than a Pope. It is a structure of governance and authority that Christ himself established."
+      }
     ],
-    card_mechanics:["fill_blank","true_false","tap_correct","multiple_choice","sequence"],
+    prayer: {
+      title: "Prayer for the Church",
+      text: [
+        "Lord Jesus Christ,",
+        "you built your Church on the rock of Peter's faith.",
+        "Protect her from the storms of this age.",
+        "Grant wisdom to our Pope and bishops,",
+        "zeal to our priests and deacons,",
+        "and holiness to all the faithful.",
+        "May your Church be a sign of unity",
+        "and an instrument of your peace",
+        "in a divided world.",
+        "Amen."
+      ],
+      source: "Traditional prayer for the Church",
+      note: "Praying for the Church is not optional — it is a responsibility of every member. The Church is holy by God's gift but wounded by her members' sins. She needs your prayers."
+    }
+  },
+
+  F0: {
+    id: "F0",
+    title: "The Seven Sacraments",
+    subtitle: "Visible signs of invisible grace",
+    tier: "Foundation",
+    tierColor: "#2E6EA6",
+    track: "F — The Sacraments",
+    prereqs: ["E1"],
+    ccc_primary: "CCC 1113–1134",
+    doctors: "Augustine, Tractates on John; Aquinas, ST III Q.60–65",
+    totalXP: 100,
+    status: "complete",
+    cards: [
+      {
+        id: 1,
+        sectionTitle: "Ex opere operato",
+        teaching: "A sacrament is a visible sign, instituted by Christ, that confers the grace it signifies. Water in Baptism, bread and wine in the Eucharist, oil in Anointing — these are not mere symbols. They actually accomplish what they represent. The technical term is ex opere operato: the sacrament works by the power of the rite itself, not by the holiness of the minister. A sinful priest validly baptizes. (CCC 1127–1128)",
+        ccc: "CCC 1127–1128",
+        mechanic: "multiple_choice",
+        prompt: "The phrase ex opere operato means:",
+        options: [
+          "The sacrament works only if the minister is holy",
+          "The sacrament depends on the faith of the person receiving it",
+          "The sacrament confers grace by the power of the rite itself, regardless of the minister's holiness",
+          "The sacrament is purely symbolic and depends on the community's belief"
+        ],
+        correct: "The sacrament confers grace by the power of the rite itself, regardless of the minister's holiness",
+        feedback: "This protects the faithful from anxiety about their minister's worthiness. A baptism is valid regardless of the priest's personal holiness because it is Christ who acts in the sacrament, not the priest."
+      },
+      {
+        id: 2,
+        sectionTitle: "Seven — no more, no less",
+        teaching: "There are exactly seven sacraments — no more, no less. Three are sacraments of initiation (Baptism, Confirmation, Eucharist), two are sacraments of healing (Reconciliation, Anointing of the Sick), and two are sacraments of service (Holy Orders, Matrimony). This number was formally defined at the Council of Trent (1547), though the Church had practiced all seven since the apostolic era. (CCC 1113–1121; 1210)",
+        ccc: "CCC 1113–1121; 1210",
+        mechanic: "true_false",
+        prompt: "True or false?",
+        statement: "The number of sacraments has varied throughout Church history, and seven was only decided at Trent.",
+        correct: false,
+        feedback: "Trent defined the number formally, but the Church did not invent new sacraments at Trent. All seven were practiced from the earliest centuries. What Trent did was close the debate definitively against Protestant reformers who wanted to reduce the number."
+      },
+      {
+        id: 3,
+        sectionTitle: "Baptismal character",
+        teaching: "Baptism is the gateway to the sacramental life. It washes away original sin, makes us children of God, members of Christ and of his Church. It imprints an indelible spiritual mark (character) that can never be erased — which is why baptism can never be repeated. Even if you leave the Church and return, you are not re-baptized. The character remains. (CCC 1213–1274)",
+        ccc: "CCC 1213–1274",
+        mechanic: "fill_blank",
+        prompt: "Complete the teaching:",
+        sentence: "Baptism imprints an indelible spiritual [BLANK] that can never be erased, which is why it can never be [BLANK].",
+        blanks: [
+          { options: ["character", "feeling", "memory", "blessing"], correct: "character" },
+          { options: ["repeated", "forgotten", "improved", "transferred"], correct: "repeated" }
+        ],
+        feedback: "The baptismal character is permanent. A baptized person who apostatizes and returns does not need re-baptism. The character is still there — the grace may need renewal through Reconciliation, but the mark itself is indelible."
+      },
+      {
+        id: 4,
+        sectionTitle: "Reconciliation",
+        teaching: "Reconciliation (Confession) is Christ's gift of ongoing mercy. The priest acts in persona Christi — in the person of Christ — when he says 'I absolve you.' This is not the priest forgiving on his own authority. It is Christ forgiving through the priest. The seal of Confession is absolute: a priest may never, under any circumstances, reveal what is confessed. (CCC 1440–1470)",
+        ccc: "CCC 1440–1470",
+        mechanic: "multiple_choice",
+        prompt: "When a priest absolves sins in Confession, he acts:",
+        options: [
+          "On his own authority as a spiritual counselor",
+          "In persona Christi — in the person of Christ himself",
+          "As a representative of the parish community",
+          "On behalf of the bishop who delegated him"
+        ],
+        correct: "In persona Christi — in the person of Christ himself",
+        feedback: "The priest is not the source of forgiveness — Christ is. The priest is the sacramental instrument through whom Christ acts."
+      },
+      {
+        id: 5,
+        sectionTitle: "Sacraments of initiation",
+        teaching: "The seven sacraments follow the rhythm of human life. Baptism initiates you. Confirmation strengthens you. Eucharist nourishes you. Reconciliation heals your soul. Anointing heals in illness. Matrimony and Holy Orders direct your vocation. Together they accompany the Christian from birth to death. (CCC 1210–1211)",
+        ccc: "CCC 1210–1211",
+        mechanic: "sequence",
+        prompt: "Arrange the three sacraments of initiation in the order they are received:",
+        words: ["Eucharist", "Baptism", "Confirmation"],
+        correct: ["Baptism", "Confirmation", "Eucharist"],
+        feedback: "Born into the Church (Baptism), strengthened for mission (Confirmation), nourished for the journey (Eucharist). This is the order of the Easter Vigil, when catechumens receive all three in a single night."
+      }
+    ],
+    prayer: {
+      title: "Anima Christi",
+      text: [
+        "Soul of Christ, sanctify me.",
+        "Body of Christ, save me.",
+        "Blood of Christ, inebriate me.",
+        "Water from the side of Christ, wash me.",
+        "Passion of Christ, strengthen me.",
+        "O good Jesus, hear me.",
+        "Within thy wounds hide me.",
+        "Permit me not to be separated from thee.",
+        "From the wicked foe defend me.",
+        "At the hour of my death call me,",
+        "and bid me come to thee,",
+        "that with thy saints I may praise thee",
+        "for ever and ever. Amen."
+      ],
+      source: "Anima Christi (14th century)",
+      note: "This prayer addresses Christ through the sacramental elements — soul, body, blood, water from his side. It is the sacraments prayed as poetry."
+    }
+  },
+
+  F1: {
+    id: "F1",
+    title: "The Eucharist & the Mass",
+    subtitle: "Source and summit of the Christian life",
+    tier: "Foundation",
+    tierColor: "#2E6EA6",
+    track: "F — The Sacraments",
+    prereqs: ["F0"],
+    ccc_primary: "CCC 1322–1419",
+    doctors: "Cyril of Jerusalem, Mystagogical Catechesis 5; Aquinas, ST III Q.73–83",
+    totalXP: 100,
+    status: "complete",
+    cards: [
+      {
+        id: 1,
+        sectionTitle: "Transubstantiation",
+        teaching: "The Catholic Church teaches that in the Eucharist, the bread and wine become the actual Body and Blood of Jesus Christ. This is not a metaphor. The substance changes while the appearances (accidents) remain. This doctrine is called transubstantiation — defined at the Fourth Lateran Council (1215) and reaffirmed at Trent. What looks like bread is Christ. What tastes like wine is Christ. (CCC 1373–1377)",
+        ccc: "CCC 1373–1377",
+        mechanic: "multiple_choice",
+        prompt: "The doctrine of transubstantiation teaches that:",
+        options: [
+          "Bread and wine symbolize Christ's body and blood",
+          "Christ is spiritually present alongside the bread and wine",
+          "The substance of bread and wine actually becomes Christ's Body and Blood",
+          "The bread and wine become Christ only in the faith of the believer"
+        ],
+        correct: "The substance of bread and wine actually becomes Christ's Body and Blood",
+        feedback: "This is the most radical claim in Catholic sacramental theology. It is not symbolism, not consubstantiation, and not purely subjective. The change is real, total, and objective."
+      },
+      {
+        id: 2,
+        sectionTitle: "Two tables, one banquet",
+        teaching: "The Mass has two main parts: the Liturgy of the Word (readings from Scripture, homily, prayers of the faithful) and the Liturgy of the Eucharist (offertory, consecration, communion). These are not two separate events but two tables of one banquet — the table of God's Word and the table of Christ's Body. The pattern comes from Emmaus, where Jesus first explained the Scriptures and then broke bread. (CCC 1346–1355)",
+        ccc: "CCC 1346–1355",
+        mechanic: "true_false",
+        prompt: "True or false?",
+        statement: "The Liturgy of the Word and the Liturgy of the Eucharist are two separate services combined for convenience.",
+        correct: false,
+        feedback: "They are two halves of one integrated action. The Word prepares us to receive the Body. Separating them impoverishes both."
+      },
+      {
+        id: 3,
+        sectionTitle: "Source and summit",
+        teaching: "Vatican II's Lumen Gentium called the Eucharist 'the source and summit of the Christian life.' Source because all grace flows from Christ's sacrifice made present in the Eucharist. Summit because the Eucharist is the highest act of worship the Church can offer — not our gift to God, but God's gift of himself to us, to which we respond with thanksgiving. (CCC 1324)",
+        ccc: "CCC 1324",
+        mechanic: "fill_blank",
+        prompt: "Complete the teaching:",
+        sentence: "The Eucharist is the [BLANK] and [BLANK] of the Christian life.",
+        blanks: [
+          { options: ["source", "beginning", "foundation", "center"], correct: "source" },
+          { options: ["summit", "goal", "end", "peak"], correct: "summit" }
+        ],
+        feedback: "Source and summit — not one or the other. The Eucharist is where the Christian life comes from (source of grace) and where it is heading (the highest form of communion with God available this side of heaven)."
+      },
+      {
+        id: 4,
+        sectionTitle: "The Sunday obligation",
+        teaching: "Catholics are obligated to attend Mass every Sunday and on holy days of obligation. This is not arbitrary rule-keeping. Sunday is the day of the resurrection — the 'Lord's Day.' The early Christians gathered for the breaking of bread on 'the first day of the week' (Acts 20:7). Deliberately missing Sunday Mass without serious reason is a grave matter. (CCC 1389; 2180–2183)",
+        ccc: "CCC 1389; 2180–2183",
+        mechanic: "multiple_choice",
+        prompt: "Why are Catholics obligated to attend Mass on Sundays?",
+        options: [
+          "It is a Church rule that can be changed by the Pope",
+          "Sunday Mass is the community's weekly social gathering",
+          "Sunday is the day of the resurrection, and the Mass makes Christ's sacrifice present",
+          "The obligation only applies during certain liturgical seasons"
+        ],
+        correct: "Sunday is the day of the resurrection, and the Mass makes Christ's sacrifice present",
+        feedback: "The Sunday obligation flows from what the Eucharist IS. If the Mass truly makes present the sacrifice of Christ, then missing it voluntarily is refusing the most important thing God offers you each week."
+      },
+      {
+        id: 5,
+        sectionTitle: "The structure of the Mass",
+        teaching: "The Mass follows a specific structure that dates to the earliest centuries of the Church. It begins with the Introductory Rites (gathering, penitential act, Gloria), moves to the Liturgy of the Word (readings, psalm, Gospel, homily, Creed, prayers), then to the Liturgy of the Eucharist (offertory, Eucharistic prayer, consecration, communion), and concludes with the Dismissal. (CCC 1348–1355)",
+        ccc: "CCC 1348–1355",
+        mechanic: "sequence",
+        prompt: "Arrange the four main parts of the Mass in order:",
+        words: ["Liturgy of the Eucharist", "Introductory Rites", "Dismissal", "Liturgy of the Word"],
+        correct: ["Introductory Rites", "Liturgy of the Word", "Liturgy of the Eucharist", "Dismissal"],
+        feedback: "Gather, hear, receive, go. The structure is not arbitrary — it is the shape of grace."
+      }
+    ],
+    prayer: {
+      title: "Prayer Before Communion",
+      text: [
+        "Lord, I am not worthy",
+        "that you should enter under my roof,",
+        "but only say the word",
+        "and my soul shall be healed.",
+        "Jesus, I believe that you are truly present",
+        "in the Most Blessed Sacrament.",
+        "I love you above all things",
+        "and I desire to receive you into my soul.",
+        "Amen."
+      ],
+      source: "Based on Matthew 8:8 and traditional communion prayers",
+      note: "These words echo the centurion's faith. Every Catholic says a version of this at every Mass, just before receiving communion. It is the most honest prayer in the liturgy."
+    }
+  },
+
+  M0: {
+    id: "M0",
+    title: "Mary & the Saints",
+    subtitle: "The Mother of God and the communion of saints",
+    tier: "Foundation",
+    tierColor: "#2E6EA6",
+    track: "M — Mary & the Saints",
+    prereqs: ["C1"],
+    ccc_primary: "CCC 484–511; 946–975",
+    doctors: "Augustine, On Holy Virginity; John Paul II, Redemptoris Mater",
+    totalXP: 100,
+    status: "complete",
+    cards: [
+      {
+        id: 1,
+        sectionTitle: "Veneration, not worship",
+        teaching: "Catholics do not worship Mary. They venerate her — which means they honor her as the greatest of all saints without placing her on the level of God. The distinction is precise: latria (worship) belongs to God alone. Hyperdulia (highest veneration) belongs to Mary. Dulia (veneration) belongs to the saints. Asking Mary to pray for you is no different in kind from asking a friend to pray for you — except that Mary is in the direct presence of God. (CCC 971; 2673–2679)",
+        ccc: "CCC 971; 2673–2679",
+        mechanic: "multiple_choice",
+        prompt: "The Catholic distinction between worship and veneration of Mary is:",
+        options: [
+          "There is no distinction — Catholics worship Mary as divine",
+          "Latria (worship) for God alone; hyperdulia (highest veneration) for Mary",
+          "Mary receives the same worship as God but in a lesser degree",
+          "Veneration of Mary was added at the Council of Trent and is optional"
+        ],
+        correct: "Latria (worship) for God alone; hyperdulia (highest veneration) for Mary",
+        feedback: "This distinction has been in place since the early Church. Asking Mary to intercede is not worship — it is requesting prayer from a fellow member of the Body of Christ who happens to be in glory."
+      },
+      {
+        id: 2,
+        sectionTitle: "The Immaculate Conception",
+        teaching: "The Immaculate Conception does not refer to Jesus' conception. It refers to Mary's. The doctrine, defined in 1854, teaches that Mary was preserved from the stain of original sin from the first moment of her conception — by a singular grace of God, in anticipation of Christ's merits. She was redeemed like all humans, but redeemed preventively rather than after the fact. (CCC 490–493)",
+        ccc: "CCC 490–493",
+        mechanic: "true_false",
+        prompt: "True or false?",
+        statement: "The Immaculate Conception refers to the virginal conception of Jesus in Mary's womb.",
+        correct: false,
+        feedback: "This is the most commonly confused Marian doctrine. The Immaculate Conception is about Mary, not Jesus. It means Mary was conceived without original sin — preserved by God's grace in advance of Christ's saving work."
+      },
+      {
+        id: 3,
+        sectionTitle: "The communion of saints",
+        teaching: "The communion of saints is the belief that all members of the Church — those alive on earth (Church Militant), those being purified in purgatory (Church Suffering), and those in heaven (Church Triumphant) — are united in one Body. Death does not sever the bond. The saints in heaven pray for us. We pray for the souls in purgatory. The whole Church, living and dead, is one communion. (CCC 946–962)",
+        ccc: "CCC 946–962",
+        mechanic: "fill_blank",
+        prompt: "Complete the three states:",
+        sentence: "The three states of the Church are: Church [BLANK] (on earth), Church Suffering (in purgatory), and Church [BLANK] (in heaven).",
+        blanks: [
+          { options: ["Militant", "Active", "Visible", "Living"], correct: "Militant" },
+          { options: ["Triumphant", "Glorious", "Eternal", "Perfected"], correct: "Triumphant" }
+        ],
+        feedback: "Militant does not mean aggressive — it means the Church on earth is still in spiritual combat. Triumphant means the Church in heaven has completed the journey."
+      },
+      {
+        id: 4,
+        sectionTitle: "The Assumption",
+        teaching: "The Assumption of Mary (defined 1950) teaches that at the end of her earthly life, Mary was taken up body and soul into heavenly glory. She did not merely die and have her soul go to heaven — her body was assumed. This is a foretaste of what awaits all the redeemed at the final resurrection. Mary is the first to receive fully what every Christian hopes for. (CCC 966; 974)",
+        ccc: "CCC 966; 974",
+        mechanic: "multiple_choice",
+        prompt: "The Assumption of Mary teaches that:",
+        options: [
+          "Mary never died but was taken directly to heaven while alive",
+          "Mary's soul went to heaven while her body remained on earth",
+          "Mary was taken up body and soul into heavenly glory",
+          "Mary was given a special place among the angels"
+        ],
+        correct: "Mary was taken up body and soul into heavenly glory",
+        feedback: "The Assumption is not just about Mary — it is about the destiny of all the redeemed. Mary is the prototype. What happened to her will happen to every Christian at the resurrection."
+      },
+      {
+        id: 5,
+        sectionTitle: "Four Marian dogmas",
+        teaching: "The four Marian dogmas were defined across nearly fifteen centuries, each building on the last: Mary is Theotokos (Mother of God, Ephesus 431), Mary's perpetual virginity (Lateran Council 649), the Immaculate Conception (Pius IX, 1854), and the Assumption (Pius XII, 1950). Each responds to a Christological question: who is Christ, and what does his redemption accomplish? (CCC 484–511; 966)",
+        ccc: "CCC 484–511; 966",
+        mechanic: "sequence",
+        prompt: "Arrange the four Marian dogmas in chronological order of definition:",
+        words: ["Immaculate Conception (1854)", "Theotokos — Mother of God (431)", "Assumption (1950)", "Perpetual Virginity (649)"],
+        correct: ["Theotokos — Mother of God (431)", "Perpetual Virginity (649)", "Immaculate Conception (1854)", "Assumption (1950)"],
+        feedback: "Each dogma is ultimately about Christ, not Mary. Theotokos protects Christ's unity of person. Perpetual virginity protects Christ's unique conception. The Immaculate Conception shows the scope of Christ's redemptive power. The Assumption shows where Christ's redemption leads."
+      }
+    ],
+    prayer: {
+      title: "Hail Holy Queen",
+      text: [
+        "Hail, Holy Queen, Mother of Mercy,",
+        "our life, our sweetness, and our hope.",
+        "To thee do we cry,",
+        "poor banished children of Eve.",
+        "To thee do we send up our sighs,",
+        "mourning and weeping in this valley of tears.",
+        "Turn then, most gracious advocate,",
+        "thine eyes of mercy toward us,",
+        "and after this our exile,",
+        "show unto us the blessed fruit of thy womb, Jesus.",
+        "O clement, O loving, O sweet Virgin Mary.",
+        "Amen."
+      ],
+      source: "Salve Regina (11th century)",
+      note: "Prayed at the end of the Rosary and at Compline (Night Prayer). Notice the theology packed into the poetry: Mary is advocate, not savior; she shows us Jesus, not herself."
+    }
+  },
+
+  L0: {
+    id: "L0",
+    title: "The Last Things",
+    subtitle: "Death, judgment, heaven, hell — and why it matters now",
+    tier: "Foundation",
+    tierColor: "#2E6EA6",
+    track: "L — The Last Things",
+    prereqs: ["F1"],
+    ccc_primary: "CCC 988–1060",
+    doctors: "Augustine, City of God XX–XXII; Aquinas, ST Supp. Q.69–99",
+    totalXP: 100,
+    status: "complete",
+    cards: [
+      {
+        id: 1,
+        sectionTitle: "Two judgments",
+        teaching: "Death is not the end. The Catholic Church teaches that immediately after death, each person faces the particular judgment — an individual accounting before God. This is distinct from the general judgment (Last Judgment) at the end of time. At the particular judgment, the soul is directed to heaven, purgatory, or hell based on the state of the person's relationship with God at the moment of death. (CCC 1021–1022)",
+        ccc: "CCC 1021–1022",
+        mechanic: "true_false",
+        prompt: "True or false?",
+        statement: "Catholics believe that judgment only happens once, at the end of the world.",
+        correct: false,
+        feedback: "There are two judgments: the particular judgment (immediately after death, for each individual) and the general judgment (at the end of time, for all humanity). The particular judgment determines where you go immediately."
+      },
+      {
+        id: 2,
+        sectionTitle: "The beatific vision",
+        teaching: "Heaven is not a place in the sky or an eternal vacation. It is the beatific vision — the direct, face-to-face communion with God that fully satisfies every human desire. Augustine: 'You have made us for yourself, and our hearts are restless until they rest in you.' Heaven is the rest. It is not escape from creation but the perfection of it. In heaven, we are more fully ourselves, not less. (CCC 1023–1029)",
+        ccc: "CCC 1023–1029",
+        mechanic: "multiple_choice",
+        prompt: "Heaven is best described as:",
+        options: [
+          "An eternal paradise of earthly pleasures",
+          "The direct, face-to-face communion with God that fulfills every desire",
+          "A reward reserved for those who lived perfectly moral lives",
+          "A spiritual realm where souls lose their individual identity"
+        ],
+        correct: "The direct, face-to-face communion with God that fulfills every desire",
+        feedback: "The beatific vision is not a reward tacked onto a virtuous life — it is the goal human nature was designed for from the beginning."
+      },
+      {
+        id: 3,
+        sectionTitle: "Purgatory",
+        teaching: "Purgatory is not a second chance or a lesser hell. It is the final purification of those who die in God's friendship but still carry the effects of sin — attachments, habits, and the 'stain' that sin leaves even after forgiveness. The souls in purgatory are saved. Their destination is heaven. But they are not yet ready for the fullness of God's presence. (CCC 1030–1032)",
+        ccc: "CCC 1030–1032",
+        mechanic: "fill_blank",
+        prompt: "Complete the teaching:",
+        sentence: "Purgatory is the final [BLANK] of those who die in God's friendship but are not yet ready for the [BLANK] of God's presence.",
+        blanks: [
+          { options: ["purification", "punishment", "testing", "waiting"], correct: "purification" },
+          { options: ["fullness", "judgment", "reward", "mercy"], correct: "fullness" }
+        ],
+        feedback: "Purgatory is not punishment — it is preparation. Think of it as the last stage of healing. A person can be forgiven for an injury but still need therapy to recover full health."
+      },
+      {
+        id: 4,
+        sectionTitle: "Hell is real",
+        teaching: "Hell is real, and the Church takes it seriously. It is the state of definitive self-exclusion from communion with God. God does not send people to hell — people choose it by rejecting God finally and completely. The Catechism describes it as 'eternal separation from God, in whom alone man can possess the life and happiness for which he was created.' The Church has never declared that any specific person is in hell. (CCC 1033–1037)",
+        ccc: "CCC 1033–1037",
+        mechanic: "multiple_choice",
+        prompt: "According to Catholic teaching, hell is:",
+        options: [
+          "A temporary punishment that eventually ends for everyone",
+          "Definitive self-exclusion from communion with God",
+          "A place where God sends people who fail to meet his standards",
+          "A metaphor for the suffering caused by sin in this life"
+        ],
+        correct: "Definitive self-exclusion from communion with God",
+        feedback: "Hell is not God's revenge. It is the logical consequence of a free creature choosing against God permanently. God respects human freedom — even the freedom to reject him forever."
+      },
+      {
+        id: 5,
+        sectionTitle: "The final articles of the Creed",
+        teaching: "The Creed ends with three claims about the future: the resurrection of the body (our bodies will be raised and glorified, not discarded), the Last Judgment (Christ will judge all humanity, revealing the meaning of every life), and life everlasting (the new heaven and new earth, where God will be 'all in all'). These are not optional beliefs — they are articles of the Creed. (CCC 988–1060)",
+        ccc: "CCC 988–1060",
+        mechanic: "sequence",
+        prompt: "Arrange the final three articles of the Creed in order:",
+        words: ["Life everlasting", "The resurrection of the body", "The Last Judgment"],
+        correct: ["The resurrection of the body", "The Last Judgment", "Life everlasting"],
+        feedback: "Bodies raised, then judged, then eternal life. Christianity does not promise escape from the body but its transformation. 'Life everlasting' is not endless duration — it is the fullness of communion with God."
+      }
+    ],
+    prayer: {
+      title: "Eternal Rest",
+      text: [
+        "Eternal rest grant unto them, O Lord,",
+        "and let perpetual light shine upon them.",
+        "May the souls of the faithful departed,",
+        "through the mercy of God,",
+        "rest in peace.",
+        "Amen."
+      ],
+      source: "Traditional prayer for the dead",
+      note: "This prayer presupposes the communion of saints: the living can pray for the dead, and it matters. It is the Church Militant praying for the Church Suffering, trusting in the mercy of God."
+    }
   },
 };
 
 // ═══════════════════════════════════════════════════════════════════
-// DAY SEQUENCES
-// Maps calendar days to lesson IDs
-// Day 1 = K0 + P1a
-// Day 2 = A1
-// Day 3 = A2
-// etc.
+// SECTION & TIER CONFIG
 // ═══════════════════════════════════════════════════════════════════
 
+export const SECTION_CONFIG = [
+  { id: "god-human", label: "God & the Human Person", lessons: ["K0", "A1", "A2", "A3", "B1"] },
+  { id: "sin-scripture", label: "Sin, Scripture & Salvation", lessons: ["B2", "B3", "D1", "D2", "D3"] },
+  { id: "jesus-christ", label: "Jesus Christ", lessons: ["C1", "C2", "C3", "C4", "C5"] },
+  { id: "church-sacraments", label: "The Church & the Sacraments", lessons: ["E1", "F0", "F1", "M0", "L0"] },
+];
+
 export const TIER_CONFIG = {
-  entry: {
-    label: "Entry",
-    lessons: ["K0"],
-    color: "#5B8A6F",
-    colorLight: "#E8F0EA",
-  },
   foundation: {
     label: "Foundation",
-    lessons: ["A1", "A2", "A3", "B1", "B2", "B3", "D1", "D2", "D3", "P1a", "P1b"],
+    lessons: ["K0", "A1", "A2", "A3", "B1", "B2", "B3", "D1", "D2", "D3", "C1", "C2", "C3", "C4", "C5", "E1", "F0", "F1", "M0", "L0"],
     color: "#2E6EA6",
-    colorLight: "#E8F3FC",
-  },
-  encounter: {
-    label: "Encounter",
-    lessons: ["P2b", "C1", "C3", "F3"],
-    color: "#B07D20",
-    colorLight: "#FDF3E3",
-  },
-  moralLife: {
-    label: "Moral Life",
-    lessons: ["G1"],
-    color: "#6D3FBE",
-    colorLight: "#F3EFFE",
-  },
-  depth: {
-    label: "Depth",
-    lessons: ["H1"],
-    color: "#B84040",
-    colorLight: "#FDEAEA",
+    colorLight: "#E8F3FC"
   },
 };
 
 // Curriculum order for onboarding "skipped" logic and path screen.
 // Flat array in unlock order — used to determine which lessons come before/after a starting point.
 export const LESSON_ORDER = [
-  "K0", "A1", "A2", "B1", "B2", "B3", "A3", "D1", "D2", "D3",
-  "P1a", "P1b", "P2b", "C1", "C3", "F3", "G1", "H1",
+  "K0", "A1", "A2", "A3", "B1",
+  "B2", "B3", "D1", "D2", "D3",
+  "C1", "C2", "C3", "C4", "C5",
+  "E1", "F0", "F1", "M0", "L0",
 ];
 
 export const DAY_PLAN = [
-  { day:1,  learn:"K0",  prayer:"P1a",  title:"Day 1 — The Kerygma" },
-  { day:2,  learn:"A1",  prayer:"P1a",  title:"Day 2 — Who Is God?" },
-  { day:3,  learn:"A2",  prayer:"P1b",  title:"Day 3 — The Holy Trinity" },
-  { day:4,  learn:"B1",  prayer:"P1b",  title:"Day 4 — Imago Dei" },
-  { day:5,  learn:"B2",  prayer:"P1b",  title:"Day 5 — Body, Soul & Free Will" },
-  { day:6,  learn:"B3",  prayer:"P1b",  title:"Day 6 — Sin & the Fall" },
-  { day:7,  learn:"A3",  prayer:"P1b",  title:"Day 7 — Creator & Creation" },
-  { day:8,  learn:"D1",  prayer:"P1b",  title:"Day 8 — What Is Scripture?" },
-  { day:9,  learn:"D2",  prayer:"P1b",  title:"Day 9 — How to Read the Bible" },
-  { day:10, learn:"D3",  prayer:"P2b",  title:"Day 10 — Salvation History: OT" },
-  { day:11, learn:"C1",  prayer:"P2b",  title:"Day 11 — The Incarnation" },
-  { day:12, learn:"C3",  prayer:"P2b",  title:"Day 12 — The Paschal Mystery" },
-  { day:13, learn:"F3",  prayer:"P2b",  title:"Day 13 — The Eucharist" },
-  { day:14, learn:"G1",  prayer:"P2b",  title:"Day 14 — The Ultimate End & Beatitude" },
-  { day:15, learn:"H1",  prayer:"P2b",  title:"Day 15 — What Is Prayer?" },
+  { day: 1,  learn: "K0",  title: "The Kerygma" },
+  { day: 2,  learn: "A1",  title: "Who Is God?" },
+  { day: 3,  learn: "A2",  title: "The Holy Trinity" },
+  { day: 4,  learn: "A3",  title: "Creator & Creation" },
+  { day: 5,  learn: "B1",  title: "Imago Dei" },
+  { day: 6,  learn: "B2",  title: "Body, Soul & Free Will" },
+  { day: 7,  learn: "B3",  title: "Sin & the Fall" },
+  { day: 8,  learn: "D1",  title: "What Is Scripture?" },
+  { day: 9,  learn: "D2",  title: "How to Read the Bible" },
+  { day: 10, learn: "D3",  title: "Salvation History" },
+  { day: 11, learn: "C1",  title: "The Incarnation" },
+  { day: 12, learn: "C2",  title: "Life & Ministry of Jesus" },
+  { day: 13, learn: "C3",  title: "The Paschal Mystery" },
+  { day: 14, learn: "C4",  title: "Resurrection & Ascension" },
+  { day: 15, learn: "C5",  title: "The Holy Spirit & Pentecost" },
+  { day: 16, learn: "E1",  title: "What Is the Church?" },
+  { day: 17, learn: "F0",  title: "The Seven Sacraments" },
+  { day: 18, learn: "F1",  title: "The Eucharist & the Mass" },
+  { day: 19, learn: "M0",  title: "Mary & the Saints" },
+  { day: 20, learn: "L0",  title: "The Last Things" },
 ];
 
 export default LESSONS;

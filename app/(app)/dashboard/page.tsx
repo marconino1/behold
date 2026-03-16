@@ -6,7 +6,7 @@ import {
 } from "@/lib/db-server";
 import { getServerUserId } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { DAY_PLAN } from "@/content/behold_lesson_content.js";
+import { DAY_PLAN, SECTION_CONFIG } from "@/content/behold_lesson_content.js";
 import { calculateCurrentHearts } from "@/lib/hearts";
 import PathScreen from "@/components/dashboard/PathScreen";
 
@@ -64,6 +64,7 @@ export default async function DashboardPage() {
       skippedLessonIds={skippedLessonIds}
       startingLesson={startingLesson}
       dayPlan={DAY_PLAN}
+      sectionConfig={SECTION_CONFIG}
       currentHearts={currentHearts}
       nextRefillAt={nextRefillAt?.toISOString() ?? null}
     />

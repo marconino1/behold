@@ -18,8 +18,13 @@ type NodeState = "complete" | "active" | "skipped" | "locked";
 interface DayPlanItem {
   day: number;
   learn: string;
-  prayer: string;
   title: string;
+}
+
+interface SectionConfigItem {
+  id: string;
+  label: string;
+  lessons: string[];
 }
 
 interface PathScreenProps {
@@ -30,6 +35,7 @@ interface PathScreenProps {
   skippedLessonIds: string[];
   startingLesson: string;
   dayPlan: DayPlanItem[];
+  sectionConfig: SectionConfigItem[];
   currentHearts: number;
   nextRefillAt: string | null;
 }
@@ -87,9 +93,17 @@ export default function PathScreen({
   skippedLessonIds,
   startingLesson,
   dayPlan,
+  sectionConfig,
   currentHearts,
   nextRefillAt: nextRefillAtStr,
 }: PathScreenProps) {
+  const sectionStarts = new Map<string, string>();
+  sectionConfig.forEach((section) => {
+    if (section.lessons.length > 0) {
+      sectionStarts.set(section.lessons[0], section.label);
+    }
+  });
+
   const startIdx = LESSON_ORDER.indexOf(startingLesson);
   const activeIndex = dayPlan.findIndex(
     (d) =>
@@ -454,6 +468,80 @@ export default function PathScreen({
                       >
                         — {tier.label.toUpperCase()} —
                       </span>
+                    </div>
+                  )}
+                  {sectionStarts.has(lessonId) && (
+                    <div
+                      style={{
+                        width: "100%",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        marginTop: isFirstInTier ? 12 : 32,
+                        marginBottom: 24,
+                        paddingLeft: 24,
+                        paddingRight: 24,
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: "100%",
+                          maxWidth: 280,
+                          height: 1,
+                          background: "rgba(255,255,255,0.35)",
+                          marginBottom: 12,
+                        }}
+                      />
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: 16,
+                          width: "100%",
+                        }}
+                      >
+                        <div
+                          style={{
+                            height: 1,
+                            flex: 1,
+                            minWidth: 24,
+                            maxWidth: 100,
+                            background: "rgba(255,255,255,0.5)",
+                          }}
+                        />
+                        <span
+                          style={{
+                            fontFamily: "'Nunito', system-ui, sans-serif",
+                            fontWeight: 700,
+                            fontSize: 13,
+                            color: "rgba(255,255,255,0.95)",
+                            letterSpacing: "0.12em",
+                            textTransform: "uppercase",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {sectionStarts.get(lessonId)}
+                        </span>
+                        <div
+                          style={{
+                            height: 1,
+                            flex: 1,
+                            minWidth: 24,
+                            maxWidth: 100,
+                            background: "rgba(255,255,255,0.5)",
+                          }}
+                        />
+                      </div>
+                      <div
+                        style={{
+                          width: "100%",
+                          maxWidth: 280,
+                          height: 1,
+                          background: "rgba(255,255,255,0.35)",
+                          marginTop: 12,
+                        }}
+                      />
                     </div>
                   )}
                   {isTappable ? (
