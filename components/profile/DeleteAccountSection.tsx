@@ -17,6 +17,8 @@ export default function DeleteAccountSection({
   const [confirmInput, setConfirmInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [deleteHover, setDeleteHover] = useState(false);
+  const [deleteFocus, setDeleteFocus] = useState(false);
 
   const canDelete =
     confirmInput.trim() === CONFIRM_TEXT && !loading;
@@ -49,13 +51,7 @@ export default function DeleteAccountSection({
 
   return (
     <>
-      <section
-        style={{
-          textAlign: "center",
-          marginTop: 20,
-          marginBottom: 8,
-        }}
-      >
+      <div style={{ textAlign: "center" }}>
         <button
           type="button"
           onClick={() => {
@@ -63,23 +59,39 @@ export default function DeleteAccountSection({
             setConfirmInput("");
             setError(null);
           }}
+          onMouseEnter={() => lightOnBlue && setDeleteHover(true)}
+          onMouseLeave={() => setDeleteHover(false)}
+          onFocus={() => lightOnBlue && setDeleteFocus(true)}
+          onBlur={() => setDeleteFocus(false)}
           style={{
             fontFamily: "'Nunito', system-ui, sans-serif",
-            fontSize: 14,
-            fontWeight: 600,
-            color: lightOnBlue ? "rgba(255,255,255,0.95)" : "var(--color-text-light)",
+            fontSize: lightOnBlue ? 13 : 14,
+            fontWeight: lightOnBlue ? 500 : 600,
+            color: lightOnBlue
+              ? deleteHover || deleteFocus
+                ? "rgba(255,255,255,0.72)"
+                : "rgba(255,255,255,0.5)"
+              : "var(--color-text-light)",
             background: "none",
             border: "none",
             cursor: "pointer",
-            textDecoration: "underline",
-            textDecorationColor: lightOnBlue ? "rgba(255,255,255,0.7)" : undefined,
-            textUnderlineOffset: 3,
-            textShadow: lightOnBlue ? "0 1px 2px rgba(0,0,0,0.25)" : undefined,
+            textDecorationLine:
+              !lightOnBlue || (lightOnBlue && (deleteHover || deleteFocus))
+                ? "underline"
+                : "none",
+            textDecorationStyle: "solid",
+            textDecorationColor: lightOnBlue
+              ? deleteHover || deleteFocus
+                ? "rgba(255,255,255,0.3)"
+                : "transparent"
+              : "currentColor",
+            textUnderlineOffset: 4,
+            transition: lightOnBlue ? "color 0.15s ease" : undefined,
           }}
         >
           Delete account
         </button>
-      </section>
+      </div>
 
       {open && (
         <div

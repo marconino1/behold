@@ -12,6 +12,7 @@ import Icon from "@/components/icons/Icon";
 import ProgressBar from "@/components/ui/ProgressBar";
 import SignOutButton from "@/components/app/SignOutButton";
 import DeleteAccountSection from "@/components/profile/DeleteAccountSection";
+import ProfileFeedbackSection from "@/components/profile/ProfileFeedbackSection";
 
 export const metadata = {
   title: "Behold — Profile",
@@ -125,7 +126,7 @@ export default async function ProfilePage() {
       style={{
         minHeight: "100vh",
         background:
-          "linear-gradient(180deg, #0C4A6E 0%, #0369A1 40%, #FAF7F2 100%)",
+          "linear-gradient(180deg, #0C4A6E 0%, #075985 38%, #0369A1 55%, #0369A1 100%)",
         paddingBottom: 100,
       }}
     >
@@ -410,12 +411,21 @@ export default async function ProfilePage() {
           </section>
         )}
 
-        {/* SECTION 4 — SIGN OUT */}
-        <section style={{ textAlign: "center" }}>
+        {/* SECTION 4 — ACCOUNT ACTIONS (hierarchy: sign out → feedback → delete) */}
+        <section
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 16,
+            textAlign: "center",
+            marginBottom: 8,
+          }}
+        >
           <SignOutButton lightOnBlue />
+          <ProfileFeedbackSection lightOnBlue />
+          <DeleteAccountSection lightOnBlue />
         </section>
-
-        <DeleteAccountSection lightOnBlue />
 
         {/* SECTION 5 — LEGAL */}
         <section style={{ marginTop: 32 }}>
