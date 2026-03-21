@@ -49,6 +49,9 @@ export async function proxy(request: NextRequest) {
       request.nextUrl.pathname === "/" ||
       request.nextUrl.pathname === "/login" ||
       request.nextUrl.pathname === "/signup" ||
+      request.nextUrl.pathname === "/forgot-password" ||
+      request.nextUrl.pathname === "/reset-password" ||
+      request.nextUrl.pathname === "/auth/callback" ||
       request.nextUrl.pathname === "/privacy";
 
     if (!user && !isPublicRoute) {
@@ -63,6 +66,9 @@ export async function proxy(request: NextRequest) {
       request.nextUrl.pathname === "/" ||
       request.nextUrl.pathname === "/login" ||
       request.nextUrl.pathname === "/signup" ||
+      request.nextUrl.pathname === "/forgot-password" ||
+      request.nextUrl.pathname === "/reset-password" ||
+      request.nextUrl.pathname === "/auth/callback" ||
       request.nextUrl.pathname === "/privacy";
     if (!isPublicRoute) {
       const url = request.nextUrl.clone();

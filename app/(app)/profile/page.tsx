@@ -11,10 +11,14 @@ import Leo from "@/components/mascot/Leo";
 import Icon from "@/components/icons/Icon";
 import ProgressBar from "@/components/ui/ProgressBar";
 import SignOutButton from "@/components/app/SignOutButton";
+import DeleteAccountSection from "@/components/profile/DeleteAccountSection";
 
 export const metadata = {
   title: "Behold — Profile",
 };
+
+/** Hide multi-tier breakdown until more tiers ship (currently Foundation-only). */
+const SHOW_TIER_PROGRESS = false;
 
 const TIER_ORDER = [
   "Entry",
@@ -111,7 +115,9 @@ export default async function ProfilePage() {
     xp = 0;
   }
 
-  const tierProgress = buildTierProgress(completedLessonIds);
+  const tierProgress = SHOW_TIER_PROGRESS
+    ? buildTierProgress(completedLessonIds)
+    : [];
   const lessonsDone = completedLessonIds.length;
 
   return (
@@ -226,39 +232,6 @@ export default async function ProfilePage() {
                 margin: "8px 0 4px 0",
               }}
             >
-              {streak.longest}
-            </p>
-            <p
-              style={{
-                fontFamily: "'Nunito', system-ui, sans-serif",
-                fontSize: 13,
-                color: "rgba(255,255,255,0.9)",
-                margin: 0,
-              }}
-            >
-              personal best
-            </p>
-          </div>
-          <div
-            style={{
-              background: "rgba(255,255,255,0.2)",
-              backdropFilter: "blur(12px)",
-              borderRadius: 16,
-              border: "1px solid rgba(255,255,255,0.3)",
-              padding: 20,
-              textAlign: "center",
-            }}
-          >
-            <Icon name="star" size={28} color="white" />
-            <p
-              style={{
-                fontFamily: "'Nunito', system-ui, sans-serif",
-                fontWeight: 800,
-                fontSize: 24,
-                color: "white",
-                margin: "8px 0 4px 0",
-              }}
-            >
               {xp}
             </p>
             <p
@@ -274,6 +247,7 @@ export default async function ProfilePage() {
           </div>
           <div
             style={{
+              gridColumn: "1 / -1",
               background: "rgba(255,255,255,0.2)",
               backdropFilter: "blur(12px)",
               borderRadius: 16,
@@ -302,7 +276,7 @@ export default async function ProfilePage() {
                 margin: 0,
               }}
             >
-              lessons done
+              lessons completed
             </p>
           </div>
         </section>
@@ -363,81 +337,85 @@ export default async function ProfilePage() {
         </section>
         */}
 
-        {/* SECTION 3 — TIER PROGRESS */}
-        <section
-          style={{
-            background: "white",
-            borderRadius: 20,
-            boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
-            padding: 24,
-            marginBottom: 32,
-          }}
-        >
-          <h2
+        {/* SECTION 3 — TIER PROGRESS (hidden until multiple tiers are live) */}
+        {SHOW_TIER_PROGRESS && (
+          <section
             style={{
-              fontFamily: "'Playfair Display', Georgia, serif",
-              fontSize: 20,
-              fontWeight: 700,
-              color: "#2C2016",
-              margin: "0 0 20px 0",
+              background: "white",
+              borderRadius: 20,
+              boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
+              padding: 24,
+              marginBottom: 32,
             }}
           >
-            Tier progress
-          </h2>
-          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-            {tierProgress.map((t) => (
-              <div key={t.tier}>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 10,
-                    marginBottom: 8,
-                  }}
-                >
+            <h2
+              style={{
+                fontFamily: "'Playfair Display', Georgia, serif",
+                fontSize: 20,
+                fontWeight: 700,
+                color: "#2C2016",
+                margin: "0 0 20px 0",
+              }}
+            >
+              Tier progress
+            </h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+              {tierProgress.map((t) => (
+                <div key={t.tier}>
                   <div
                     style={{
-                      width: 10,
-                      height: 10,
-                      borderRadius: "50%",
-                      background: t.tierColor,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      marginBottom: 8,
                     }}
+                  >
+                    <div
+                      style={{
+                        width: 10,
+                        height: 10,
+                        borderRadius: "50%",
+                        background: t.tierColor,
+                      }}
+                    />
+                    <span
+                      style={{
+                        fontFamily: "'Nunito', system-ui, sans-serif",
+                        fontWeight: 700,
+                        fontSize: 15,
+                        color: "#2C2016",
+                      }}
+                    >
+                      {t.tier}
+                    </span>
+                    <span
+                      style={{
+                        fontFamily: "'Nunito', system-ui, sans-serif",
+                        fontSize: 14,
+                        color: "#8C7A62",
+                        marginLeft: "auto",
+                      }}
+                    >
+                      {t.completed} / {t.total} lessons
+                    </span>
+                  </div>
+                  <ProgressBar
+                    value={t.total > 0 ? (t.completed / t.total) * 100 : 0}
+                    color={t.tierColor}
+                    height={8}
                   />
-                  <span
-                    style={{
-                      fontFamily: "'Nunito', system-ui, sans-serif",
-                      fontWeight: 700,
-                      fontSize: 15,
-                      color: "#2C2016",
-                    }}
-                  >
-                    {t.tier}
-                  </span>
-                  <span
-                    style={{
-                      fontFamily: "'Nunito', system-ui, sans-serif",
-                      fontSize: 14,
-                      color: "#8C7A62",
-                      marginLeft: "auto",
-                    }}
-                  >
-                    {t.completed} / {t.total} lessons
-                  </span>
                 </div>
-                <ProgressBar
-                  value={t.total > 0 ? (t.completed / t.total) * 100 : 0}
-                  color={t.tierColor}
-                  height={8}
-                />
-              </div>
-            ))}
-          </div>
-        </section>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* SECTION 4 — SIGN OUT */}
         <section style={{ textAlign: "center" }}>
-          <SignOutButton />
+          <SignOutButton lightOnBlue />
         </section>
+
+        <DeleteAccountSection lightOnBlue />
 
         {/* SECTION 5 — LEGAL */}
         <section style={{ marginTop: 32 }}>
@@ -495,11 +473,11 @@ export default async function ProfilePage() {
 
         <p
           style={{
-            fontSize: 13,
-            color: "#4B5563",
             fontFamily: "'Nunito', system-ui, sans-serif",
+            fontSize: 12,
             fontStyle: "italic",
-            fontWeight: 500,
+            fontWeight: 400,
+            color: "rgba(255,255,255,0.4)",
             lineHeight: 1.5,
             textAlign: "center",
             marginTop: 32,

@@ -121,6 +121,8 @@ export default function PathScreen({
   const [countdown, setCountdown] = useState("0:00:00");
   const nextRefillAt = nextRefillAtStr ? new Date(nextRefillAtStr) : null;
 
+  const hasStarted = completedLessonIds.length > 0;
+
   const tierFirstIndex = new Map<string, number>();
   dayPlan.forEach((d, i) => {
     const t = getTierForLesson(d.learn);
@@ -128,15 +130,25 @@ export default function PathScreen({
   });
 
   useEffect(() => {
-    if (activeLessonId && activeNodeRef.current) {
+    if (!activeLessonId) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    if (!hasStarted) return;
+    if (activeNodeRef.current) {
       activeNodeRef.current.scrollIntoView({
         behavior: "smooth",
         block: "center",
       });
-    } else {
-      window.scrollTo({ top: 0, behavior: "smooth" });
     }
-  }, [activeLessonId]);
+  }, [activeLessonId, hasStarted]);
+
+  function scrollToActiveLesson() {
+    activeNodeRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+  }
 
   useEffect(() => {
     if (!nextRefillAt || !noHearts) return;
@@ -277,6 +289,29 @@ export default function PathScreen({
           </div>
         </div>
 
+        {activeLessonId && (
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: 28 }}>
+            <button
+              type="button"
+              onClick={scrollToActiveLesson}
+              style={{
+                fontFamily: "'Nunito', system-ui, sans-serif",
+                fontWeight: 800,
+                fontSize: 15,
+                color: "white",
+                background: "#C8932A",
+                border: "none",
+                borderRadius: 9999,
+                padding: "14px 28px",
+                cursor: "pointer",
+                boxShadow: "0 4px 0 rgba(0,0,0,0.2), 0 6px 16px rgba(0,0,0,0.15)",
+              }}
+            >
+              {hasStarted ? "Continue" : "Start today's lesson"}
+            </button>
+          </div>
+        )}
+
         {noHearts && (
           <div
             style={{
@@ -307,6 +342,17 @@ export default function PathScreen({
           .path-node-tappable:active .path-node-circle {
             transform: translateY(2px) !important;
             box-shadow: 0 2px 0 rgba(0,0,0,0.35) !important;
+          }
+          @keyframes path-node-onboarding-pulse {
+            0%, 100% {
+              box-shadow: 0 4px 0 rgba(0,0,0,0.4), 0 6px 14px var(--pulse-ring-color, rgba(200,147,42,0.45));
+            }
+            50% {
+              box-shadow: 0 4px 0 rgba(0,0,0,0.32), 0 8px 24px var(--pulse-ring-color, rgba(200,147,42,0.6)), 0 0 0 4px rgba(255,255,255,0.18);
+            }
+          }
+          .path-node-onboarding-pulse {
+            animation: path-node-onboarding-pulse 2.4s ease-in-out infinite;
           }
         `}} />
         <div style={{ position: "relative" }}>
@@ -362,7 +408,7 @@ export default function PathScreen({
                     >
                       <Leo state="idle" size="nav" />
                       <div
-                        className="animate-pulse-ring path-node-circle"
+                        className={`path-node-circle ${hasStarted ? "animate-pulse-ring" : "path-node-onboarding-pulse"}`}
                         style={{
                           width: 56,
                           height: 56,
@@ -371,9 +417,9 @@ export default function PathScreen({
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
-                          boxShadow: activeShadow,
+                          ...(hasStarted ? { boxShadow: activeShadow } : {}),
                           transition: "all 80ms ease",
-                          ["--pulse-ring-color" as string]: hexToRgba(tier?.color ?? "#C8932A", 0.4),
+                          ["--pulse-ring-color" as string]: hexToRgba(tier?.color ?? "#C8932A", 0.45),
                         }}
                       >
                         <Icon name="star" size={24} color="white" />

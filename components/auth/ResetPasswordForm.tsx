@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import Leo from "@/components/mascot/Leo";
 import Button from "@/components/ui/Button";
 import { createClient } from "@/lib/supabase/client";
@@ -24,28 +23,40 @@ const EyeOffIcon = () => (
   </svg>
 );
 
-export default function LoginForm() {
+const MIN_PASSWORD_LENGTH = 8;
+
+export default function ResetPasswordForm() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      setError("Password must be at least 8 characters.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
     setLoading(true);
 
     try {
       const supabase = createClient();
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email,
+      const { error: updateError } = await supabase.auth.updateUser({
         password,
       });
 
-      if (signInError) {
-        setError(signInError.message);
+      if (updateError) {
+        setError(updateError.message);
         setLoading(false);
         return;
       }
@@ -93,7 +104,7 @@ export default function LoginForm() {
             textAlign: "center",
           }}
         >
-          Welcome back
+          Set new password
         </h1>
         <p
           style={{
@@ -104,44 +115,13 @@ export default function LoginForm() {
             textAlign: "center",
           }}
         >
-          Sign in to continue your journey
+          Enter your new password below
         </p>
 
-        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-          <div>
-            <label
-              htmlFor="email"
-              style={{
-                display: "block",
-                fontFamily: "'Nunito', system-ui, sans-serif",
-                fontWeight: 700,
-                fontSize: 14,
-                color: "#2C2016",
-                marginBottom: 6,
-              }}
-            >
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              autoComplete="email"
-              style={{
-                width: "100%",
-                padding: "14px 16px",
-                fontFamily: "'Nunito', system-ui, sans-serif",
-                fontSize: 16,
-                border: "1.5px solid #E8DDD0",
-                borderRadius: 12,
-                outline: "none",
-                boxSizing: "border-box",
-              }}
-            />
-          </div>
-
+        <form
+          onSubmit={handleSubmit}
+          style={{ display: "flex", flexDirection: "column", gap: 20 }}
+        >
           <div>
             <label
               htmlFor="password"
@@ -154,7 +134,7 @@ export default function LoginForm() {
                 marginBottom: 6,
               }}
             >
-              Password
+              New password
             </label>
             <div style={{ position: "relative" }}>
               <input
@@ -163,7 +143,8 @@ export default function LoginForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                autoComplete="current-password"
+                minLength={MIN_PASSWORD_LENGTH}
+                autoComplete="new-password"
                 style={{
                   width: "100%",
                   padding: "14px 44px 14px 16px",
@@ -197,20 +178,64 @@ export default function LoginForm() {
                 {showPassword ? <EyeOffIcon /> : <EyeIcon />}
               </button>
             </div>
-            <Link
-              href="/forgot-password"
+          </div>
+
+          <div>
+            <label
+              htmlFor="confirmPassword"
               style={{
-                display: "inline-block",
-                marginTop: 8,
+                display: "block",
                 fontFamily: "'Nunito', system-ui, sans-serif",
+                fontWeight: 700,
                 fontSize: 14,
-                color: "#0EA5E9",
-                textDecoration: "none",
-                fontWeight: 600,
+                color: "#2C2016",
+                marginBottom: 6,
               }}
             >
-              Forgot password?
-            </Link>
+              Confirm password
+            </label>
+            <div style={{ position: "relative" }}>
+              <input
+                id="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                minLength={MIN_PASSWORD_LENGTH}
+                autoComplete="new-password"
+                style={{
+                  width: "100%",
+                  padding: "14px 44px 14px 16px",
+                  fontFamily: "'Nunito', system-ui, sans-serif",
+                  fontSize: 16,
+                  border: "1.5px solid #E8DDD0",
+                  borderRadius: 12,
+                  outline: "none",
+                  boxSizing: "border-box",
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword((p) => !p)}
+                aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                style={{
+                  position: "absolute",
+                  right: 12,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  padding: 0,
+                  border: "none",
+                  background: "none",
+                  cursor: "pointer",
+                  color: "var(--color-muted)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {showConfirmPassword ? <EyeOffIcon /> : <EyeIcon />}
+              </button>
+            </div>
           </div>
 
           {error && (
@@ -233,32 +258,9 @@ export default function LoginForm() {
             loading={loading}
             disabled={loading}
           >
-            Sign in
+            Update password
           </Button>
         </form>
-
-        <p
-          style={{
-            fontFamily: "'Nunito', system-ui, sans-serif",
-            fontSize: 15,
-            color: "#8C7A62",
-            textAlign: "center",
-            marginTop: 24,
-            marginBottom: 0,
-          }}
-        >
-          Don&apos;t have an account?{" "}
-          <Link
-            href="/signup"
-            style={{
-              color: "#C8932A",
-              fontWeight: 700,
-              textDecoration: "none",
-            }}
-          >
-            Sign up
-          </Link>
-        </p>
       </div>
     </div>
   );
