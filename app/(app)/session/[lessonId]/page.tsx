@@ -6,6 +6,7 @@ import Link from "next/link";
 import Icon from "@/components/icons/Icon";
 import Leo from "@/components/mascot/Leo";
 import Button from "@/components/ui/Button";
+import FeedbackModal from "@/components/shared/FeedbackModal";
 import { LESSONS } from "@/content/behold_lesson_content.js";
 import { isAdminEmail } from "@/lib/admin";
 import { createClient } from "@/lib/supabase/client";
@@ -76,6 +77,9 @@ export default function SessionPage() {
   const [completeMounted, setCompleteMounted] = useState(false);
   const [teachingDismissed, setTeachingDismissed] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [completeFeedbackOpen, setCompleteFeedbackOpen] = useState(false);
+  const [completeFeedbackLinkHover, setCompleteFeedbackLinkHover] =
+    useState(false);
 
   type AnsweredCardState = {
     selectedAnswer: string | null;
@@ -165,6 +169,10 @@ export default function SessionPage() {
       })
       .catch(() => {});
   }, [userId, isAdmin]);
+
+  useEffect(() => {
+    if (screen !== "complete") setCompleteFeedbackOpen(false);
+  }, [screen]);
 
   useEffect(() => {
     if (!nextRefillAt) return;
@@ -1819,20 +1827,58 @@ export default function SessionPage() {
           >
             Continue
           </Button>
+          <div
+            style={{
+              width: "100%",
+              textAlign: "center",
+              marginTop: 20,
+            }}
+          >
+            <button
+              type="button"
+              onClick={() => setCompleteFeedbackOpen(true)}
+              onMouseEnter={() => setCompleteFeedbackLinkHover(true)}
+              onMouseLeave={() => setCompleteFeedbackLinkHover(false)}
+              style={{
+                margin: 0,
+                padding: 0,
+                border: "none",
+                background: "none",
+                cursor: "pointer",
+                fontFamily: "'Nunito', system-ui, sans-serif",
+                fontSize: 13,
+                color: completeFeedbackLinkHover
+                  ? "rgba(255,255,255,0.8)"
+                  : "rgba(255,255,255,0.5)",
+                textDecoration: "underline",
+                textDecorationStyle: "dotted",
+                textDecorationColor: "rgba(255,255,255,0.3)",
+                transition: "color 0.15s ease",
+              }}
+            >
+              Share feedback
+            </button>
+          </div>
           <p
             style={{
-              fontSize: 12,
-              color: "rgba(255,255,255,0.7)",
               fontFamily: "'Nunito', system-ui, sans-serif",
-              fontWeight: 500,
+              fontSize: 12,
+              fontStyle: "italic",
+              fontWeight: 400,
+              color: "rgba(255,255,255,0.4)",
+              lineHeight: 1.5,
               textAlign: "center",
               marginTop: 24,
               marginBottom: 0,
-              padding: "0 16px",
+              padding: "0 24px",
             }}
           >
             Our app is not infallible. When in doubt, cross-check with the Catechism.
           </p>
+          <FeedbackModal
+            open={completeFeedbackOpen}
+            onClose={() => setCompleteFeedbackOpen(false)}
+          />
         </div>
       </div>
     );

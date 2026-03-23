@@ -131,24 +131,14 @@ export default function PathScreen({
 
   useEffect(() => {
     if (!activeLessonId) {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.scrollTo({ top: 0, behavior: "instant" });
       return;
     }
-    if (!hasStarted) return;
-    if (activeNodeRef.current) {
-      activeNodeRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
-    }
-  }, [activeLessonId, hasStarted]);
-
-  function scrollToActiveLesson() {
     activeNodeRef.current?.scrollIntoView({
-      behavior: "smooth",
+      behavior: "instant",
       block: "center",
     });
-  }
+  }, [activeLessonId]);
 
   useEffect(() => {
     if (!nextRefillAt || !noHearts) return;
@@ -288,29 +278,6 @@ export default function PathScreen({
             ))}
           </div>
         </div>
-
-        {activeLessonId && (
-          <div style={{ display: "flex", justifyContent: "center", marginBottom: 28 }}>
-            <button
-              type="button"
-              onClick={scrollToActiveLesson}
-              style={{
-                fontFamily: "'Nunito', system-ui, sans-serif",
-                fontWeight: 800,
-                fontSize: 15,
-                color: "white",
-                background: "#C8932A",
-                border: "none",
-                borderRadius: 9999,
-                padding: "14px 28px",
-                cursor: "pointer",
-                boxShadow: "0 4px 0 rgba(0,0,0,0.2), 0 6px 16px rgba(0,0,0,0.15)",
-              }}
-            >
-              {hasStarted ? "Continue" : "Start today's lesson"}
-            </button>
-          </div>
-        )}
 
         {noHearts && (
           <div
