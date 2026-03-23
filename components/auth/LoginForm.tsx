@@ -1,11 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import AuthOrDivider from "@/components/auth/AuthOrDivider";
+import GoogleLogoMark from "@/components/auth/GoogleLogoMark";
 import Leo from "@/components/mascot/Leo";
 import Button from "@/components/ui/Button";
 import { createClient } from "@/lib/supabase/client";
+
+const CARD_SHADOW =
+  "0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08)";
 
 const GRADIENT =
   "linear-gradient(180deg, #0C4A6E 0%, #0369A1 50%, #0EA5E9 100%)";
@@ -31,6 +36,36 @@ export default function LoginForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  useEffect(() => {
+    const onPageShow = (e: PageTransitionEvent) => {
+      if (e.persisted) setGoogleLoading(false);
+    };
+    window.addEventListener("pageshow", onPageShow);
+    return () => window.removeEventListener("pageshow", onPageShow);
+  }, []);
+
+  async function handleGoogleSignIn() {
+    setError(null);
+    setGoogleLoading(true);
+    try {
+      const supabase = createClient();
+      const { error: oauthError } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+      if (oauthError) {
+        setError(oauthError.message);
+        setGoogleLoading(false);
+      }
+    } catch {
+      setError("Something went wrong. Please try again.");
+      setGoogleLoading(false);
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -79,7 +114,7 @@ export default function LoginForm() {
           maxWidth: 400,
           background: "white",
           borderRadius: 20,
-          boxShadow: "0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08)",
+          boxShadow: CARD_SHADOW,
           padding: 32,
         }}
       >
@@ -107,7 +142,53 @@ export default function LoginForm() {
           Sign in to continue your journey
         </p>
 
-        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 16,
+            }}
+          >
+            <button
+              type="button"
+              onClick={handleGoogleSignIn}
+              disabled={googleLoading || loading}
+              style={{
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 12,
+                padding: "14px 16px",
+                borderRadius: 9999,
+                border: "1px solid var(--color-border)",
+                background: "white",
+                boxShadow: CARD_SHADOW,
+                cursor: googleLoading || loading ? "not-allowed" : "pointer",
+                opacity: googleLoading || loading ? 0.7 : 1,
+                fontFamily: "'Nunito', system-ui, sans-serif",
+                fontWeight: 600,
+                fontSize: 16,
+                color: "var(--color-text)",
+                boxSizing: "border-box",
+              }}
+            >
+              <GoogleLogoMark size={20} />
+              {googleLoading ? "Redirecting…" : "Continue with Google"}
+            </button>
+
+            <AuthOrDivider />
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 20,
+              marginTop: 16,
+            }}
+          >
           <div>
             <label
               htmlFor="email"
@@ -235,6 +316,7 @@ export default function LoginForm() {
           >
             Sign in
           </Button>
+          </div>
         </form>
 
         <p
