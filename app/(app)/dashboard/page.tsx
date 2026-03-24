@@ -3,6 +3,7 @@ import {
   getLessonProgressDataServer,
   getProfileServer,
   getStreakServer,
+  syncHeartsToDb,
 } from "@/lib/db-server";
 import { getServerUserId, isAdminUser } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
@@ -48,13 +49,25 @@ export default async function DashboardPage() {
   //   redirect("/onboarding/level");
   // }
 
+  const rawHearts = heartsStatus.hearts;
   const { currentHearts, nextRefillAt } = calculateCurrentHearts(
-    heartsStatus.hearts,
+    rawHearts,
     heartsStatus.lastLostAt
   );
 
-  const startingLesson = profile?.starting_lesson ?? "K0";
   const isAdmin = await isAdminUser();
+
+  if (!isAdmin) {
+    try {
+      if (currentHearts > rawHearts) {
+        syncHeartsToDb(userId, currentHearts).catch(() => {});
+      }
+    } catch {
+      // non-blocking
+    }
+  }
+
+  const startingLesson = profile?.starting_lesson ?? "K0";
   const displayHearts = isAdmin ? 99 : currentHearts;
 
   return (

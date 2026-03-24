@@ -190,6 +190,42 @@ export async function getHeartsStatusServer(
   };
 }
 
+/**
+ * Persists refilled heart count. Does not touch last_lost_at (use update when row exists).
+ */
+export async function syncHeartsToDb(
+  userId: string,
+  currentHearts: number
+): Promise<void> {
+  const supabase = await createServerSupabaseClient();
+  const now = new Date().toISOString();
+
+  const { data: existing, error: selErr } = await supabase
+    .from("hearts_status")
+    .select("user_id")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (selErr) throw selErr;
+
+  if (existing) {
+    const { error } = await supabase
+      .from("hearts_status")
+      .update({ hearts: currentHearts, updated_at: now })
+      .eq("user_id", userId);
+    if (error) throw error;
+    return;
+  }
+
+  const { error } = await supabase.from("hearts_status").insert({
+    user_id: userId,
+    hearts: currentHearts,
+    last_lost_at: null,
+    updated_at: now,
+  });
+  if (error) throw error;
+}
+
 export async function completeOnboardingServer(
   userId: string,
   startingLesson: string

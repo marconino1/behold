@@ -7,6 +7,7 @@ import Icon from "@/components/icons/Icon";
 import Leo from "@/components/mascot/Leo";
 import Button from "@/components/ui/Button";
 import FeedbackModal from "@/components/shared/FeedbackModal";
+import { syncHeartsToDbForSessionUser } from "@/app/actions/syncHearts";
 import { LESSONS } from "@/content/behold_lesson_content.js";
 import { isAdminEmail } from "@/lib/admin";
 import { createClient } from "@/lib/supabase/client";
@@ -162,10 +163,16 @@ export default function SessionPage() {
   useEffect(() => {
     if (!userId) return;
     getHeartsStatus(userId)
-      .then(({ hearts: h, lastLostAt }) => {
-        const { currentHearts, nextRefillAt: next } = calculateCurrentHearts(h, lastLostAt);
+      .then(({ hearts: rawHearts, lastLostAt }) => {
+        const { currentHearts, nextRefillAt: next } = calculateCurrentHearts(
+          rawHearts,
+          lastLostAt
+        );
         setHearts(isAdmin ? 99 : currentHearts);
         setNextRefillAt(isAdmin ? null : next);
+        if (!isAdmin && currentHearts > rawHearts) {
+          void syncHeartsToDbForSessionUser(userId);
+        }
       })
       .catch(() => {});
   }, [userId, isAdmin]);
